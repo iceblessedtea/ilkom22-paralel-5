@@ -1,0 +1,6 @@
+<h1>Daftar Administrator</h1>
+<ul>
+  <% @adms.each do |adm| %>
+    <li><a href="/adm/<%= adm['id'] %>"><%= adm['name'] %></a></li>
+  <% end %>
+</ul>
