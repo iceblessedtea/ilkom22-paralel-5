@@ -38,7 +38,7 @@ module HealthService
         get '/patients' do
           content_type :json
           begin
-            # Ganti URL di bawah dengan URL service "Patient" Anda
+            # Ganti URL di bawah dengan URL service "Patient" 
             response = RestClient.get 'http://localhost:9293/patients'
             response.body
           rescue RestClient::ExceptionWithResponse => e
