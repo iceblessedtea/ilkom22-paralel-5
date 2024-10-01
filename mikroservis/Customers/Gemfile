@@ -7,3 +7,6 @@ source "https://rubygems.org"
 gem "sinatra", "~> 4.0"
 
 gem "rackup", "~> 2.1"
+
+gem "sequel", "~> 5.84"
+gem "sqlite3", "~> 2.0"

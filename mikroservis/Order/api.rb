@@ -3,15 +3,15 @@ require 'json'
 
 module OrderService
   class API < Sinatra::Base
-    def initialize
-      super()
-      @arr_orders = []
-    end
 
     get '/' do
       content_type :json
       {'message' => 'Order service sudah menyala '}.to_json
     end
+
+    get '/order/user/:user_id'do
+      "list of orders for user #{user_id}"
+  end
 
     # CRUD ORDER
     get '/orders' do
