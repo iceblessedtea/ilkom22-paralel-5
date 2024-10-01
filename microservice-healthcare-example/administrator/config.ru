@@ -1,3 +1,3 @@
-require './api'  # Ini akan memuat file 'api.rb'
+require_relative './api'  # Ini akan memuat file 'api.rb'
 
-run HealthService::Administrator  # Ini menjalankan aplikasi Sinatra
+run HealthService::App  # Ini menjalankan aplikasi Sinatra
