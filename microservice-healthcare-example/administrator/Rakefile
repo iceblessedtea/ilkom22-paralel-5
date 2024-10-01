@@ -1,0 +1,11 @@
+require 'sinatra/activerecord'
+require './api'  # Nama file utama aplikasi (sesuaikan dengan nama file)
+
+# Load semua tasks yang ada di Sinatra ActiveRecord
+namespace :db do
+  task :environment do
+    require './api'  # Nama file utama aplikasi
+  end
+end
+
+require 'sinatra/activerecord/rake'
