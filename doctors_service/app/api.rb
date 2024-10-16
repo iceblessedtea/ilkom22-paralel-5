@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'sinatra/cross_origin'
 require 'sequel'
 require 'sqlite3'
 require 'json'
@@ -6,6 +7,15 @@ require 'time'
 
 module DoctorService
   class API < Sinatra::Base
+    configure do
+      enable :cross_origin
+      set :allow_methods, [:get, :post, :put, :delete, :options]
+      set :public_folder, File.dirname(__FILE__) + '/views' # Menentukan folder publik
+    end
+
+    before do
+      response.headers['Access-Control-Allow-Origin'] = '*'
+    end
 
     # Connect ke database SQLite
     db = Sequel.sqlite("./db/healthcare.db")
@@ -13,10 +23,16 @@ module DoctorService
     # Tabel Dokter
     doctors = db[:doctors]
 
+    # CORS preflight request
+    options "*" do
+      response.headers["Allow"] = "GET, POST, PUT, DELETE, OPTIONS"
+      response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+      200
+    end
+
     # Route untuk mengakses halaman utama (index.html)
     get '/' do
-      content_type :json
-      {message: "Service Dokter Berhasil"}.to_json
+      send_file File.join(settings.public_folder, 'index.html') # Mengirim file HTML
     end
     
     # Create 

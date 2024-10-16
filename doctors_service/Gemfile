@@ -13,3 +13,5 @@ gem "rackup", "~> 2.1"
 gem "sequel", "~> 5.85"
 
 gem "sqlite3", "~> 2.1"
+
+gem "sinatra-cross_origin", "~> 0.4.0"
