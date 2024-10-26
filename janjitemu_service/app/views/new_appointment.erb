@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tambah Janji Temu</title>
+  <style>
+    body {
+      font-family: 'Helvetica Now', sans-serif;
+      background-color: white;
+      color: #052552;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #0b60be;
+      text-align: center;
+    }
+    form {
+      background-color: #0b60be;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      color: white; /* Set label color to white */
+    }
+    select, input[type="date"], input[type="time"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #052552;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0b60be;
+    }
+    .cancel-btn {
+      background-color: #052552;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    .hospital-image {
+      display: block;
+      margin: 20px auto;
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tambah Janji Temu Baru</h1>
+  <!-- Pastikan jalur gambar benar -->
+  <img src="Universitas-Halu-Oleo-Logo.png" alt="Rumah Sakit UHO" class="hospital-image">
+  <form action="/appointments" method="post">
+    <label for="patient_id">Nama Pasien:</label>
+    <select name="patient_id" id="patient_id" required>
+      <% @patients.each do |patient| %>
+        <option value="<%= patient.id %>"><%= patient.name %></option>
+      <% end %>
+    </select>
+
+    <label for="doctor_id">Nama Dokter:</label>
+    <select name="doctor_id" id="doctor_id" required>
+      <% @doctors.each do |doctor| %>
+        <option value="<%= doctor.id %>"><%= doctor.name %></option>
+      <% end %>
+    </select>
+
+    <label for="date">Tanggal:</label>
+    <input type="date" name="date" id="date" required>
+
+    <label for="time">Waktu:</label>
+    <input type="time" name="time" id="time" required>
+
+    <label for="description">Deskripsi:</label>
+    <textarea name="description" id="description" required></textarea>
+
+    <button type="submit">Simpan Janji Temu</button>
+    <a href="/appointments-view" class="cancel-btn">Batal</a>
+  </form>
+</body>
+</html>

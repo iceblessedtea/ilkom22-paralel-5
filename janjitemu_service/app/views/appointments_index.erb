@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Janji Temu</title>
+  <style>
+    body {
+      font-family: 'Helvetica Now', sans-serif;
+      background-color: #f7faff;
+      color: #052552;
+      margin: 40px;
+    }
+    h1 {
+      text-align: center;
+      color: #0b60be;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #052552;
+      color: white;
+      font-weight: bold;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f4f7;
+    }
+    tr:hover {
+      background-color: #e6f0ff;
+    }
+    .add-appointment {
+      display: block;
+      width: 220px;
+      margin: 20px auto;
+      text-align: center;
+      background-color: #0b60be;
+      color: white;
+      padding: 12px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      transition: background-color 0.3s ease;
+    }
+    .add-appointment:hover {
+      background-color: #052552;
+    }
+    .edit-btn, .delete-btn {
+      padding: 8px 12px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+    .edit-btn {
+      background-color: #0b60be;
+      color: white;
+    }
+    .edit-btn:hover {
+      background-color: #052552;
+    }
+    .delete-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #da190b;
+    }
+    /* Responsive design */
+    @media (max-width: 768px) {
+      body {
+        margin: 20px;
+      }
+      .add-appointment {
+        width: 100%;
+      }
+      table, th, td {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Daftar Janji Temu</h1>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Nama Pasien</th>
+      <th>Nama Dokter</th>
+      <th>Tanggal</th>
+      <th>Waktu</th>
+      <th>Deskripsi</th>
+      <th>Aksi</th>
+    </tr>
+    <% @appointments.each do |appointment| %>
+      <tr>
+        <td><%= appointment[:id] %></td>
+        <td><%= @patients.find { |p| p[:id] == appointment[:patient_id] }[:name] %></td>
+        <td><%= @doctors.find { |d| d[:id] == appointment[:doctor_id] }[:name] %></td>
+        <td><%= appointment[:date] %></td>
+        <td><%= appointment[:time] %></td>
+        <td><%= appointment[:description] %></td>
+        <td>
+          <a href="/appointments/<%= appointment[:id] %>/edit" class="edit-btn">Edit</a>
+          <form method="post" action="/appointments/<%= appointment[:id] %>/delete" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus janji temu ini?');">
+            <button type="submit" class="delete-btn">Hapus</button>
+          </form>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+  <a href="/appointments/new" class="add-appointment">Tambah Janji Temu Baru</a>
+</body>
+</html>
