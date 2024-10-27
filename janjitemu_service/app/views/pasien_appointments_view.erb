@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daftar Janji Temu</title>
+  <title>Janji Temu Pasien</title>
   <style>
     body {
       font-family: 'Helvetica Now', sans-serif;
@@ -11,7 +11,7 @@
       color: #052552;
       margin: 40px;
     }
-    h1 {
+    h1, h2 {
       text-align: center;
       color: #0b60be;
     }
@@ -56,30 +56,6 @@
     .add-appointment:hover {
       background-color: #052552;
     }
-    .edit-btn, .delete-btn {
-      padding: 8px 12px;
-      text-decoration: none;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
-    }
-    .edit-btn {
-      background-color: #0b60be;
-      color: white;
-    }
-    .edit-btn:hover {
-      background-color: #052552;
-    }
-    .delete-btn {
-      background-color: #f44336;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    .delete-btn:hover {
-      background-color: #da190b;
-    }
     /* Responsive design */
     @media (max-width: 768px) {
       body {
@@ -95,7 +71,8 @@
   </style>
 </head>
 <body>
-  <h1>Daftar Janji Temu</h1>
+  <!-- Daftar Janji Temu Pasien -->
+  <h1>Daftar Janji Temu Pasien</h1>
   <table>
     <tr>
       <th>ID</th>
@@ -104,7 +81,6 @@
       <th>Tanggal</th>
       <th>Waktu</th>
       <th>Deskripsi</th>
-      <th>Aksi</th>
     </tr>
     <% @appointments.each do |appointment| %>
       <tr>
@@ -114,15 +90,32 @@
         <td><%= appointment[:date] %></td>
         <td><%= appointment[:time] %></td>
         <td><%= appointment[:description] %></td>
-        <td>
-          <a href="/appointments/<%= appointment[:id] %>/edit" class="edit-btn">Edit</a>
-          <form method="post" action="/appointments/<%= appointment[:id] %>/delete" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus janji temu ini?');">
-            <button type="submit" class="delete-btn">Hapus</button>
-          </form>
-        </td>
       </tr>
     <% end %>
   </table>
-  <a href="/appointments/new?redirect_to=/appointments-view" class="add-appointment">Tambah Janji Temu Baru</a>
+  
+  <a href="/appointments/new?redirect_to=/patient-appointments-view&patient_id=<%= current_patient.id %>" class="add-appointment">Tambah Janji Temu Baru</a>
+
+  <!-- Daftar Dokter -->
+  <h2>Daftar Dokter</h2>
+  <table>
+    <tr>
+      <th>ID Dokter</th>
+      <th>Nama Dokter</th>
+      <th>Spesialisasi</th>
+      <th>Tahun Pengalaman</th>
+      <th>Bekerja Sejak</th>
+    </tr>
+    <% @doctors.each do |doctor| %>
+      <tr>
+        <td><%= doctor[:id] %></td>
+        <td><%= doctor[:name] %></td>
+        <td><%= doctor[:specialization] %></td>
+        <td><%= doctor[:years_of_experience] %> tahun</td>
+        <td><%= Date.parse(doctor[:working_since].to_s).strftime("%d-%m-%Y") rescue doctor[:working_since] %></td>
+
+      </tr>
+    <% end %>
+  </table>
 </body>
 </html>

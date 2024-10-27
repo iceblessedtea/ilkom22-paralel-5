@@ -86,12 +86,14 @@
   </div>
 
   <form action="/appointments" method="post">
+    <input type="hidden" name="redirect_to" value="<%= @redirect_to %>">
+  
     <label for="patient_id">Nama Pasien:</label>
-    <select name="patient_id" id="patient_id" required>
+   <select name="patient_id" id="patient_id" required>
       <% @patients.each do |patient| %>
-        <option value="<%= patient.id %>"><%= patient.name %></option>
+      <option value="<%= patient.id %>" <%= 'selected' if patient.id.to_s == @selected_patient_id %>><%= patient.name %></option>
       <% end %>
-    </select>
+   </select>
 
     <label for="doctor_id">Nama Dokter:</label>
     <select name="doctor_id" id="doctor_id" required>
@@ -110,7 +112,7 @@
     <textarea name="description" id="description" required></textarea>
 
     <button type="submit">Simpan Janji Temu</button>
-    <a href="/appointments-view" class="cancel-btn">Batal</a>
+    <a href="<%= params[:redirect_to] || '/appointments-view' %>" class="cancel-btn">Batal</a>
   </form>
 </body>
 </html>

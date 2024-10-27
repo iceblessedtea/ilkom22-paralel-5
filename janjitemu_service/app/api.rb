@@ -19,6 +19,13 @@ module JanjiTemu
       set :show_exceptions, false
     end
 
+    helpers do
+      def current_patient
+        # Mock current patient - dalam implementasi nyata ini akan diambil dari session
+        Patient.first
+      end
+    end
+
     before do
       response.headers['Access-Control-Allow-Origin'] = '*'
     end
@@ -37,6 +44,21 @@ module JanjiTemu
         }
       end
       json appointments
+    end
+
+    # Route untuk menampilkan semua dokter dalam JSON
+    get '/doctors' do
+      content_type :json
+      doctors = Doctor.all.map do |doctor|
+        {
+          id: doctor.id,
+          name: doctor.name,
+          specialization: doctor.specialization,
+          years_of_experience: doctor.years_of_experience,
+          working_since: doctor.working_since
+        }
+      end
+      json doctors
     end
 
     # Route untuk membuat janji temu baru
@@ -70,7 +92,13 @@ module JanjiTemu
           status 201
           json appointment
         else
-          redirect '/appointments-view'
+          redirect_path = case params[:redirect_to]
+          when '/patient-appointments-view'
+            '/appointments-viewpasien'
+          else
+            '/appointments-view'
+          end
+          redirect redirect_path
         end
       rescue JSON::ParserError => e
         halt 400, json({ error: 'Invalid JSON format', message: e.message })
@@ -80,7 +108,6 @@ module JanjiTemu
     end
 
     # Route untuk mengupdate appointment
-    # Menggunakan POST dengan _method=put untuk form submission
     post '/appointments/:id' do
       begin
         appointment = Appointment[params[:id]]
@@ -161,7 +188,7 @@ module JanjiTemu
       @doctors = Doctor.all
       erb :edit_appointment
     end
-
+    
     get '/appointments-view' do
       content_type :html
       @appointments = Appointment.all
@@ -174,7 +201,21 @@ module JanjiTemu
       content_type :html
       @patients = Patient.all
       @doctors = Doctor.all
+      @selected_patient_id = params[:patient_id]
+      @redirect_to = params[:redirect_to]
       erb :new_appointment
+    end
+
+    get '/appointments-viewpasien' do
+      content_type :html
+      @appointments = Appointment.where(patient_id: current_patient.id)
+      @patients = Patient.all
+      @doctors = Doctor.all
+      erb :pasien_appointments_view
+    end
+
+    get '/patient-appointments-view' do
+      redirect '/appointments-viewpasien'
     end
 
     options '*' do
