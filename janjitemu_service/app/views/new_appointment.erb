@@ -15,6 +15,22 @@
     h1 {
       color: #0b60be;
       text-align: center;
+      margin-bottom: 20px;
+    }
+    .sub-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .hospital-image {
+      width: 50px;
+      height: auto;
+      margin-right: 10px;
+    }
+    .sub-header h2 {
+      color: #0b60be;
+      font-size: 20px;
+      margin: 0;
     }
     form {
       background-color: #0b60be;
@@ -25,7 +41,7 @@
     label {
       display: block;
       margin: 10px 0 5px;
-      color: white; /* Set label color to white */
+      color: white;
     }
     select, input[type="date"], input[type="time"], textarea {
       width: 100%;
@@ -59,18 +75,16 @@
       display: inline-block;
       text-align: center;
     }
-    .hospital-image {
-      display: block;
-      margin: 20px auto;
-      max-width: 100%;
-      height: auto;
-    }
   </style>
 </head>
 <body>
   <h1>Tambah Janji Temu Baru</h1>
-  <!-- Pastikan jalur gambar benar -->
-  <img src="Universitas-Halu-Oleo-Logo.png" alt="Rumah Sakit UHO" class="hospital-image">
+
+  <div class="sub-header">
+    <img src="/images/Universitas-Halu-Oleo-Logo.png" alt="Logo UHO" class="hospital-image">
+    <h2>Rumah Sakit UHO</h2>
+  </div>
+
   <form action="/appointments" method="post">
     <label for="patient_id">Nama Pasien:</label>
     <select name="patient_id" id="patient_id" required>
