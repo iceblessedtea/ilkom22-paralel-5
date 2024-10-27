@@ -25,6 +25,5 @@ module OrderService
       @arr_orders << order
       { 'success' => true, 'message' => 'Order added successfully' }.to_json
     end
-
   end
 end
