@@ -5,6 +5,10 @@ require './models/patient'
 
 set :database_file, 'config/database.yml'
 
+get '/' do
+  erb:'patients/home'
+end
+
 # Tampilkan daftar pasien
 get '/patients' do
   @patients = Patient.all
