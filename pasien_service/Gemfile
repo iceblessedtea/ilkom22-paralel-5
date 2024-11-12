@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 
 gem 'sinatra'
 gem 'sinatra-activerecord'
-gem 'sqlite3'               # atau sqlite3 jika Anda ingin menggunakan SQLite
+gem 'mysql2'                # atau sqlite3 jika Anda ingin menggunakan SQLite
 gem 'rake'                  # Untuk task management (migrasi database)
 gem 'json'                  # Untuk manipulasi JSON (API)
 gem "rackup", "~> 2.1"

@@ -1,7 +1,24 @@
+# config/database.yml
 development:
-  adapter: sqlite3
-  encoding: utf8
-  database: patient_service_development
+  adapter: mysql2
+  database: pasien
   username: root
   password: 
   host: localhost
+  port: 3306
+
+test:
+  adapter: mysql2
+  database: pasien
+  username: root
+  password: 
+  host: localhost
+  port: 3306
+
+production:
+  adapter: mysql2
+  database: pasien
+  username: root
+  password: 
+  host: localhost
+  port: 3306
