@@ -12,7 +12,7 @@ module DoctorService
     configure do
       enable :cross_origin
       set :allow_methods, [:get, :post, :put, :delete, :options]
-      set :public_folder, File.dirname(__FILE__) + '/views' # Menentukan folder publik
+      set :public_folder, File.dirname(__FILE__) + '/public' # Menentukan folder publik
     end
 
     before do
@@ -47,9 +47,9 @@ module DoctorService
       200
     end
 
-    # Route untuk mengakses halaman utama (index.html)
+    # Route untuk mengakses halaman utama 
     get '/' do
-      send_file File.join(settings.public_folder, 'index.html') # Mengirim file HTML
+      send_file File.join(settings.public_folder, 'index.html') 
     end
     
     # Create 
@@ -58,10 +58,15 @@ module DoctorService
       doctor_param['created_at'] = Time.now
       doctor_param['updated_at'] = Time.now
 
+      max_id = doctors.max(:id) || 0  
+      doctor_param['id'] = max_id + 1 
+
       res = doctors.insert(doctor_param)
       id = doctors.max(:id)
 
       if res 
+        new_doctor = doctors.where(id: id).first
+        broadcast(connections, { action: 'create', data: new_doctor }.to_json)
         status 201
         JSON.generate('success'=>true, 'doctor_id' => id)
       else
@@ -96,6 +101,8 @@ module DoctorService
       res = doctors.where(id: params['id']).update(doctor_param)
 
       if res
+        updated_doctor = doctors.where(id: params['id']).first
+        broadcast(connections, { action: 'update', data: updated_doctor }.to_json)
         status 200
         JSON.generate('success'=>true)
       else
@@ -109,6 +116,7 @@ module DoctorService
       res = doctors.where(id: params['id']).delete
 
       if res
+        broadcast(connections, { action: 'delete', data: { id: params['id'] } }.to_json)
         status 200
         JSON.generate('success'=>true)
       else
