@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Service</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="assets/images/logo_uho.png" alt="Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Pasien & Pengunjung</a></li>
+                <li><a href="#">Layanan</a></li>
+                <li><a href="#">Diklat</a></li>
+                <li><a href="#">Kegiatan</a></li>
+                <li><a href="#">Artikel Kesehatan</a></li>
+                <li><a href="#">About Us</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <!-- Form Tambah Dokter -->
+        <section id="add-doctor">
+            <h2>Tambah Dokter Baru</h2>
+            <form id="doctor-form">
+                <label for="doctor-name">Nama Pasien:</label>
+                <input type="text" id="doctor-name" placeholder="Masukkan nama pasien" required>
+
+                <label for="doctor-specialization">Nama Dokter:</label>
+                <input type="text" id="doctor-specialization" placeholder="Pilih Dokter" required>
+
+                <label for="doctor-phone">Nomor Telepon:</label>
+                <input type="text" id="doctor-phone" placeholder="Masukkan nomor telepon" required>
+
+                <label for="doctor-work-since">Pengalaman Kerja:</label>
+                <input type="number" id="doctor-work-since" placeholder="Tahun pengalaman kerja" required>
+
+                <div class="buttons">
+                    <button type="submit" class="btn btn-save">Simpan Data Dokter</button>
+                    <button type="reset" class="btn btn-cancel">Batal</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Tabel Data Dokter -->
+        <section id="doctor-data">
+            <h2>Data Dokter</h2>
+            <table id="doctors-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Spesialisasi</th>
+                        <th>Nomor Telepon</th>
+                        <th>Pengalaman Kerja</th>
+                        <th>Dibuat Pada</th>
+                        <th>Diperbarui Pada</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data dokter akan diisi secara dinamis -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Doctor Service</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
