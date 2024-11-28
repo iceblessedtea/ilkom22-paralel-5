@@ -4,6 +4,8 @@ require 'sequel'
 require 'sqlite3'
 require 'json'
 require 'time'
+require 'faye/websocket'
+require 'thread'
 
 module DoctorService
   class API < Sinatra::Base
@@ -23,6 +25,21 @@ module DoctorService
     # Tabel Dokter
     doctors = db[:doctors]
 
+    # WebSocket setup
+    connections = []
+
+    get '/ws' do
+      request.websocket do |ws|
+        ws.onopen { connections << ws }
+        ws.onclose { connections.delete(ws) }
+      end
+    end
+    
+    def broadcast(connections, message)
+      connections.each do |ws|
+        ws.send(message) if ws.open?
+      end
+    end
     # CORS preflight request
     options "*" do
       response.headers["Allow"] = "GET, POST, PUT, DELETE, OPTIONS"

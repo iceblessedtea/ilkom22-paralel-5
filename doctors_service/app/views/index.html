@@ -36,7 +36,7 @@
         }
 
         input {
-            width: 95%;
+            width: 98%;
             margin: 10px 0;
             padding: 10px;
             border: 1px solid #ccc;
@@ -134,6 +134,47 @@
         const doctorTable = document.getElementById('doctorTable').getElementsByTagName('tbody')[0];
         let isEditing = false;
         let currentDoctorId = null;
+        
+        const socket = new WebSocket('ws://localhost:4567/ws');
+
+        // Fungsi untuk menangani pesan dari server
+        socket.onmessage = function (event) {
+            const message = JSON.parse(event.data);
+            if (message.action === 'create') {
+                const row = doctorTable.insertRow();
+                row.innerHTML = `
+                    <td>${message.data.name}</td>
+                    <td>${message.data.specialization}</td>
+                    <td>${message.data.phone}</td>
+                    <td>${message.data.work_since}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editDoctor(${message.data.id}, '${message.data.name}', '${message.data.specialization}', '${message.data.phone}', ${message.data.work_since})">Edit</button>
+                        <button class="delete-btn" onclick="deleteDoctor(${message.data.id})">Delete</button>
+                    </td>
+                `;
+            } else if (message.action === 'update') {
+                // Update row di tabel berdasarkan ID
+                const rows = doctorTable.rows;
+                for (let i = 1; i < rows.length; i++) {
+                    if (rows[i].cells[0].textContent == message.data.id) {
+                        rows[i].cells[1].textContent = message.data.name;
+                        rows[i].cells[2].textContent = message.data.specialization;
+                        rows[i].cells[3].textContent = message.data.phone;
+                        rows[i].cells[4].textContent = message.data.work_since;
+                        break;
+                    }
+                }
+            } else if (message.action === 'delete') {
+                // Hapus row berdasarkan ID
+                const rows = doctorTable.rows;
+                for (let i = 1; i < rows.length; i++) {
+                    if (rows[i].cells[0].textContent == message.id) {
+                        doctorTable.deleteRow(i);
+                        break;
+                    }
+                }
+            }
+        };
 
         // Load doctors
         function loadDoctors() {
