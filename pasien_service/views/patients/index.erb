@@ -1,0 +1,32 @@
+<!-- views/patients/index.erb -->
+<h2>All Patients</h2>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @patients.each do |patient| %>
+      <tr>
+        <td><%= patient.id %></td>
+        <td><%= patient.name %></td>
+        <td><%= patient.email %></td>
+        <td>
+          <a href="/patients/<%= patient.id %>" class="btn btn-info">View</a>
+          <a href="/patients/<%= patient.id %>/edit" class="btn btn-warning">Edit</a>
+          <form action="/patients/<%= patient.id %>" method="POST" style="display:inline">
+            <input type="hidden" name="_method" value="DELETE">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<a href="/patients/new" class="btn btn-primary">Add New Patient</a>

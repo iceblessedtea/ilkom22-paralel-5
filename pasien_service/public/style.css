@@ -1,0 +1,62 @@
+/* public/style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff; /* Warna putih kebiruan */
+    color: #333;
+    padding: 20px;
+  }
+  
+  .title {
+    text-align: center;
+    color: #007bff; /* Warna biru */
+    margin-bottom: 20px;
+  }
+  
+  .form-container {
+    background-color: #fff;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-label {
+    font-weight: bold;
+    color: #007bff;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 16px;
+  }
+  
+  .btn-success {
+    background-color: #007bff;
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    margin-top: 5px;
+  }
+  
+  .btn:hover {
+    opacity: 0.9;
+  }
+  
