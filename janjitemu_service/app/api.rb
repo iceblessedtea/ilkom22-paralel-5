@@ -198,6 +198,7 @@ module JanjiTemu
       @doctors = Doctor.all
       erb :appointments_index
     end
+    
 # Route untuk menampilkan halaman new appointment
     get '/appointments/new' do
       content_type :html

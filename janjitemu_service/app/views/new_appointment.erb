@@ -1,279 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tambah Janji Temu</title>
-  <style>
-    body {
-      font-family: 'Helvetica Now', sans-serif;
-      background-color: white;
-      color: #052552;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      color: #0b60be;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .sub-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    .hospital-image {
-      width: 50px;
-      height: auto;
-      margin-right: 10px;
-    }
-    .sub-header h2 {
-      color: #0b60be;
-      font-size: 20px;
-      margin: 0;
-    }
-    form {
-      background-color: #0b60be;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      color: white;
-    }
-    select, input[type="date"], input[type="time"], textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-    button {
-      background-color: #052552;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    button:hover {
-      background-color: #0b60be;
-    }
-    .cancel-btn {
-      background-color: #052552;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
-    }
-  </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Janji Temu Baru</title>
+    <title>New Janji Temu</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Dropdown menu */
-        .dropdown:hover .dropdown-menu {
-            display: block;
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            background-color: #00334e; /* Warna biru gelap */
-            color: white;
-            min-width: 250px;
-            padding: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-            transform: scale(0.8) translateY(-10px);
-            transform-origin: center;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            opacity: 0;
-        }
-
-        .dropdown:hover .dropdown-menu {
-            transform: scale(1) translateY(0);
-            opacity: 1;
-        }
-
-        .dropdown-menu a {
-            display: block;
-            padding: 8px 16px;
-            text-decoration: none;
-            color: white;
-        }
-
-        .dropdown-menu a:hover {
-            background-color: #00506b; /* Warna hover */
-        }
-
-        /* Multi-column dropdown */
-        .dropdown-menu {
-            column-count: 2;
-            column-gap: 16px;
-        }
-
-        /* Form Borders */
-        form select,
-        form input,
-        form textarea {
-            border: 1px solid #d1d5db; /* Tailwind gray-300 */
-            border-radius: 0.375rem; /* Tailwind rounded-md */
-            padding: 0.5rem;
-            width: 100%;
-            transition: border-color 0.2s;
-        }
-
-        form select:focus,
-        form input:focus,
-        form textarea:focus {
-            outline: none;
-            border-color: #3b82f6; /* Tailwind blue-500 */
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); /* Blue focus ring */
-        }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.6.0/css/glide.core.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.6.0/css/glide.theme.min.css" rel="stylesheet">
+    <link href="https://ai-public.creatie.ai/gen_page/tailwind-custom.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com/3.4.5?plugins=forms@0.5.7,typography@0.5.13,aspect-ratio@0.4.2,container-queries@0.1.1"></script>
+    <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js" data-color="#000000" data-border-radius="small"></script>
 </head>
-<body>
-  <h1>Tambah Janji Temu Baru</h1>
-<body class="bg-gray-50">
-
-  <div class="sub-header">
-    <img src="/images/Universitas-Halu-Oleo-Logo.png" alt="Logo UHO" class="hospital-image">
-    <h2>Rumah Sakit UHO</h2>
-  </div>
-    <!-- Header -->
+<body class="font-inter bg-gray-50">
     <header class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
+        <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
                 <div class="flex items-center">
                     <img src="/images/Universitas-Halu-Oleo-Logo.png" alt="RSUHO Logo" class="h-12">
                 </div>
-                <nav class="relative flex space-x-8">
-                    <!-- Dropdown PASIEN & PENGUNJUNG -->
-                    <div class="dropdown relative">
-                        <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">PASIEN & PENGUNJUNG</a>
-                        <div class="dropdown-menu">
-                            <a href="#">Cari Dokter</a>
-                            <a href="#">Petunjuk Lokasi</a>
-                            <a href="#">Admsi</a>
-                            <a href="#">Layanan Tambahan</a>
-                            <a href="#">Informasi Umum</a>
-                        </div>
-                    </div>
-                    <!-- Dropdown LAYANAN -->
-                    <div class="dropdown relative">
-                        <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">LAYANAN</a>
-                        <div class="dropdown-menu">
-                            <a href="#">Rawat Inap</a>
-                            <a href="#">Ketersediaan Tempat Tidur</a>
-                            <a href="#">FAQ</a>
-                            <a href="#">Penanganan Darurat</a>
-                            <a href="#">Jadwal Operasi</a>
-                        </div>
-                    </div>
-                    <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">DIKLITLAT</a>
-                    <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">KEGIATAN</a>
-                    <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">BERITA & ARTIKEL KESEHATAN</a>
-                    <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">ABOUT RSUHO</a>
+                <nav class="flex space-x-8">
+                    <a href="#" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-custom">PASIEN & PENGUNJUNG </a>
+                    <a href="#" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-custom">LAYANAN</a>
+                    <a href="#" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-custom">DIKLITLAT</a>
+                    <a href="#" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-custom">KEGIATAN</a>
+                    <a href="#" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-custom">BERITA & ARTIKEL KESEHATAN</a>
+                    <a href="#" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-custom">ABOUT RSUHO</a>
                 </nav>
             </div>
         </div>
     </header>
 
-  <form action="/appointments" method="post">
-    <input type="hidden" name="redirect_to" value="<%= @redirect_to %>">
-  
-    <label for="patient_id">Nama Pasien:</label>
-   <select name="patient_id" id="patient_id" required>
-      <% @patients.each do |patient| %>
-      <option value="<%= patient.id %>" <%= 'selected' if patient.id.to_s == @selected_patient_id %>><%= patient.name %></option>
-      <% end %>
-   </select>
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="bg-white p-8 rounded-lg shadow-lg">
-            <h1 class="text-2xl font-bold text-center mb-8 text-gray-900">Tambah Janji Temu Baru</h1>
-            <form action="/appointments" method="post" class="space-y-6">
-                <!-- Nama Pasien -->
-                <div>
-                    <label for="patient_id" class="block text-sm font-medium text-gray-700">Nama Pasien:</label>
-                    <select id="patient_id" name="patient_id">
-                        <option value="1">John Doe</option>
-                        <option value="2">Jane Smith</option>
-                    </select>
-                </div>
-
-    <label for="doctor_id">Nama Dokter:</label>
-    <select name="doctor_id" id="doctor_id" required>
-      <% @doctors.each do |doctor| %>
-        <option value="<%= doctor.id %>"><%= doctor.name %></option>
-      <% end %>
-    </select>
-                <!-- Nama Dokter -->
-                <div>
-                    <label for="doctor_id" class="block text-sm font-medium text-gray-700">Nama Dokter:</label>
-                    <select id="doctor_id" name="doctor_id">
-                        <option value="1">Dr. John Smith</option>
-                        <option value="2">Dr. Jane Doe</option>
-                    </select>
-                </div>
-
-    <label for="date">Tanggal:</label>
-    <input type="date" name="date" id="date" required>
-                <!-- Tanggal dan Waktu -->
-                <div class="grid grid-cols-2 gap-4">
+    <main>
+        <div class="relative bg-white">
+            <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div class="grid grid-cols-2 gap-16 items-center">
                     <div>
-                        <label for="date" class="block text-sm font-medium text-gray-700">Tanggal:</label>
-                        <input type="date" id="date" name="date">
+                        <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-6">Kesehatan Anda Adalah Prioritas Kami</h1>
+                        <p class="text-lg text-gray-600 mb-8">Rasakan layanan kesehatan kelas dunia dengan tim dokter ahli dan fasilitas canggih kami.</p>
+                        <div class="bg-white p-6 rounded-lg shadow-lg">
+                            <h2 class="text-xl font-semibold mb-4">Book an Appointment</h2>
+                            <form class="space-y-4">
+                                <div>
+                                    <input type="text" placeholder="Full Name" class="w-full border-gray-300 !rounded-button focus:border-custom focus:ring-custom">
+                                </div>
+                                
+                                <div>
+                                    <input type="tel" placeholder="Dokter" class="w-full border-gray-300 !rounded-button focus:border-custom focus:ring-custom">
+                                </div>
+                                <div>
+                                    <input type="email" placeholder="Email Address" class="w-full border-gray-300 !rounded-button focus:border-custom focus:ring-custom">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input type="date" class="w-full border-gray-300 !rounded-button focus:border-custom focus:ring-custom">
+                                    <input type="time" class="w-full border-gray-300 !rounded-button focus:border-custom focus:ring-custom">
+                                </div>
+                                <div>
+                                    <textarea placeholder="Appointment Description" rows="3" class="w-full border-gray-300 !rounded-button focus:border-custom focus:ring-custom"></textarea>
+                                </div>
+                                <button type="submit" class="w-full bg-custom text-white !rounded-button py-2 px-4 hover:bg-blue-700 transition duration-150">Book Now</button>
+                            </form>
+                        </div>
                     </div>
                     <div>
-                        <label for="time" class="block text-sm font-medium text-gray-700">Waktu:</label>
-                        <input type="time" id="time" name="time">
+                        <img src="https://img.freepik.com/premium-vector/group-diverse-healthcare-professionals-stands-confidently-together-wearing-various-medical-attire-promoting-teamwork-health-awareness-lively-atmosphere_520881-14767.jpg" alt="Healthcare Professionals" class="w-full object-cover">
                     </div>
                 </div>
+            </div>
+        </div>
 
-    <label for="time">Waktu:</label>
-    <input type="time" name="time" id="time" required>
-                <!-- Deskripsi -->
-                <div>
-                    <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi:</label>
-                    <textarea id="description" name="description" rows="4"></textarea>
+        <div class="bg-gray-50 py-16">
+            <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-center mb-12">Layanan Unggulan Kami</h2>
+                <div class="grid grid-cols-4 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                        <i class="fas fa-heartbeat text-4xl text-custom mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Cardiology</h3>
+                        <p class="text-gray-600">Perawatan jantung komprehensif dengan pilihan diagnostik dan pengobatan yang canggih.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                        <i class="fas fa-brain text-4xl text-custom mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Neurology</h3>
+                        <p class="text-gray-600">Perawatan ahli untuk kondisi neurologis dengan teknologi mutakhir.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                        <i class="fas fa-bone text-4xl text-custom mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Orthopedics</h3>
+                        <p class="text-gray-600">Perawatan khusus untuk kondisi tulang, sendi, dan otot.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                        <i class="fas fa-stethoscope text-4xl text-custom mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">General Medicine</h3>
+                        <p class="text-gray-600">Layanan perawatan kesehatan primer yang komprehensif untuk semua usia.</p>
+                    </div>
                 </div>
+            </div>
+        </div>
 
-    <label for="description">Deskripsi:</label>
-    <textarea name="description" id="description" required></textarea>
-                <!-- Tombol -->
-                <div class="flex justify-between">
-                    <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">Simpan Janji Temu</button>
-                    <a href="/appointments-view" class="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition">Batal</a>
+        <div class="bg-white py-16">
+            <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-center mb-12">Meet Our Expert Doctors</h2>
+                <div class="glide">
+                    <div class="glide__track" data-glide-el="track">
+                        <ul class="glide__slides">
+                            <li class="glide__slide">
+                                <div class="bg-white rounded-lg shadow-sm p-6 mx-4">
+                                    <img src="https://creatie.ai/ai/api/search-image?flag=a164a1dd-ee39-4b9a-9056-20f770d74864" alt="Dr. John Smith" class="w-48 h-48 mx-auto rounded-full object-cover mb-4">
+                                    <h3 class="text-xl font-semibold text-center">Dr. John Smith</h3>
+                                    <p class="text-gray-600 text-center mb-4">Cardiologist</p>
+                                    <button class="w-full bg-custom text-white !rounded-button py-2 px-4 hover:bg-blue-700 transition duration-150">Lihat Profil</button>
+                                </div>
+                            </li>
+                            <li class="glide__slide">
+                                <div class="bg-white rounded-lg shadow-sm p-6 mx-4">
+                                    <img src="https://creatie.ai/ai/api/search-image?flag=d45cf902-647a-436f-98c2-00a3c0e97aa8" alt="Dr. Sarah Johnson" class="w-48 h-48 mx-auto rounded-full object-cover mb-4">
+                                    <h3 class="text-xl font-semibold text-center">Dr. Sarah Johnson</h3>
+                                    <p class="text-gray-600 text-center mb-4">Neurologist</p>
+                                    <button class="w-full bg-custom text-white !rounded-button py-2 px-4 hover:bg-blue-700 transition duration-150">Lihat Profil</button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="glide__bullets" data-glide-el="controls[nav]">
+                        <button class="glide__bullet" data-glide-dir="=0"></button>
+                        <button class="glide__bullet" data-glide-dir="=1"></button>
+                    </div>
                 </div>
-            </form>
+            </div>
+        </div>
+
+        <div class="bg-gray-50 py-16">
+            <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-center mb-12">Mengapa Memilih Kami</h2>
+                <div class="grid grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <i class="fas fa-clock text-4xl text-custom mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">24/7 Emergency Care</h3>
+                        <p class="text-gray-600">Layanan medis 24 jam untuk keadaan darurat.</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-user-md text-4xl text-custom mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Expert Doctors</h3>
+                        <p class="text-gray-600">Tim profesional medis yang berpengalaman dan terspesialisasi.</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-microscope text-4xl text-custom mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Advanced Technology</h3>
+                        <p class="text-gray-600">Peralatan dan fasilitas medis canggih.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white py-16">
+            <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-center mb-12">Testimoni Pasien</h2>
+                <div class="glide">
+                    <div class="glide__track" data-glide-el="track">
+                        <ul class="glide__slides">
+                            <li class="glide__slide">
+                                <div class="bg-gray-50 rounded-lg p-6 mx-4">
+                                    <p class="text-gray-600 mb-4">"Exceptional care and attention from the medical staff. I couldn't be more satisfied with my experience at RSUHO."</p>
+                                    <p class="font-semibold">- Michael Brown</p>
+                                </div>
+                            </li>
+                            <li class="glide__slide">
+                                <div class="bg-gray-50 rounded-lg p-6 mx-4">
+                                    <p class="text-gray-600 mb-4">"The doctors were very professional and caring. The facilities are modern and clean. Highly recommended!"</p>
+                                    <p class="font-semibold">- Emma Wilson</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="glide__bullets" data-glide-el="controls[nav]">
+                        <button class="glide__bullet" data-glide-dir="=0"></button>
+                        <button class="glide__bullet" data-glide-dir="=1"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gray-50 py-16">
+            <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-center mb-12">Tips Kesehatan Terbaru</h2>
+                <div class="grid grid-cols-3 gap-8">
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <img src="https://imgx.sonora.id/crop/0x0:0x0/x/photo/2023/08/19/whatsapp-image-2023-08-19-at-15-20230819034635.jpg" alt="Healthy Living" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold mb-2">10 Tips Kesehatan Terbaru</h3>
+                            <p class="text-gray-600 mb-4">Perubahan gaya hidup sederhana yang dapat meningkatkan kesehatan dan kesejahteraan Anda secara keseluruhan.</p>
+                            <a href="#" class="text-custom hover:text-blue-700">Read More →</a>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfzMGi3Q_W56JWtdBynmfs-LSS3KkfTS77zQ&s" alt="Mental Health" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold mb-2">Memahami Kesehatan Mental</h3>
+                            <p class="text-gray-600 mb-4">Wawasan penting tentang menjaga kesehatan mental yang baik di zaman modern.</p>
+                            <a href="#" class="text-custom hover:text-blue-700">Read More →</a>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <img src="https://www.nestlehealthscience.co.id/sites/default/files/inline-images/1.jpg" alt="Nutrition Guide" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold mb-2">Panduan Nutrisi Penting</h3>
+                            <p class="text-gray-600 mb-4">Saran ahli tentang menjaga pola makan seimbang dan sehat.</p>
+                            <a href="#" class="text-custom hover:text-blue-700">Read More →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
-    <button type="submit">Simpan Janji Temu</button>
-    <a href="<%= params[:redirect_to] || '/appointments-view' %>" class="cancel-btn">Batal</a>
-  </form>
-    <!-- Footer -->
     <footer class="bg-gray-900 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-3 gap-8">
+        <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-4 gap-8">
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
                     <p class="mb-2"><i class="fas fa-map-marker-alt mr-2"></i> 123 Hospital Street, City</p>
@@ -285,22 +227,42 @@
                     <ul class="space-y-2">
                         <li><a href="#" class="hover:text-gray-300">About Us</a></li>
                         <li><a href="#" class="hover:text-gray-300">Services</a></li>
-                        <li><a href="#" class="hover:text-gray-300">FAQ</a></li>
+                        <li><a href="#" class="hover:text-gray-300">Doctors</a></li>
                         <li><a href="#" class="hover:text-gray-300">Contact</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
-                    <p class="mb-4">Stay connected with us:</p>
                     <div class="flex space-x-4">
-                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="hover:text-gray-300"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="hover:text-gray-300"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="hover:text-gray-300"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="hover:text-gray-300"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+                    <form class="space-y-4">
+                        <input type="email" placeholder="Your email address" class="w-full bg-gray-800 border-gray-700 text-white !rounded-button focus:border-custom focus:ring-custom">
+                        <button type="submit" class="w-full bg-custom text-white !rounded-button py-2 px-4 hover:bg-blue-700 transition duration-150">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center">
+                <p>&copy; 2024 RSUHO Hospital. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.6.0/glide.min.js"></script>
+    <script>
+        new Glide('.glide', {
+            type: 'carousel',
+            startAt: 0,
+            perView: 3,
+            gap: 30,
+            autoplay: 3000
+        }).mount();
+    </script>
 </body>
 </html>
