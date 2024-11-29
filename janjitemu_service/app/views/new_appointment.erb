@@ -76,14 +76,125 @@
       text-align: center;
     }
   </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Janji Temu Baru</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Dropdown menu */
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: #00334e; /* Warna biru gelap */
+            color: white;
+            min-width: 250px;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            transform: scale(0.8) translateY(-10px);
+            transform-origin: center;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #00506b; /* Warna hover */
+        }
+
+        /* Multi-column dropdown */
+        .dropdown-menu {
+            column-count: 2;
+            column-gap: 16px;
+        }
+
+        /* Form Borders */
+        form select,
+        form input,
+        form textarea {
+            border: 1px solid #d1d5db; /* Tailwind gray-300 */
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            padding: 0.5rem;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        form select:focus,
+        form input:focus,
+        form textarea:focus {
+            outline: none;
+            border-color: #3b82f6; /* Tailwind blue-500 */
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); /* Blue focus ring */
+        }
+    </style>
 </head>
 <body>
   <h1>Tambah Janji Temu Baru</h1>
+<body class="bg-gray-50">
 
   <div class="sub-header">
     <img src="/images/Universitas-Halu-Oleo-Logo.png" alt="Logo UHO" class="hospital-image">
     <h2>Rumah Sakit UHO</h2>
   </div>
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center">
+                    <img src="/images/Universitas-Halu-Oleo-Logo.png" alt="RSUHO Logo" class="h-12">
+                </div>
+                <nav class="relative flex space-x-8">
+                    <!-- Dropdown PASIEN & PENGUNJUNG -->
+                    <div class="dropdown relative">
+                        <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">PASIEN & PENGUNJUNG</a>
+                        <div class="dropdown-menu">
+                            <a href="#">Cari Dokter</a>
+                            <a href="#">Petunjuk Lokasi</a>
+                            <a href="#">Admsi</a>
+                            <a href="#">Layanan Tambahan</a>
+                            <a href="#">Informasi Umum</a>
+                        </div>
+                    </div>
+                    <!-- Dropdown LAYANAN -->
+                    <div class="dropdown relative">
+                        <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">LAYANAN</a>
+                        <div class="dropdown-menu">
+                            <a href="#">Rawat Inap</a>
+                            <a href="#">Ketersediaan Tempat Tidur</a>
+                            <a href="#">FAQ</a>
+                            <a href="#">Penanganan Darurat</a>
+                            <a href="#">Jadwal Operasi</a>
+                        </div>
+                    </div>
+                    <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">DIKLITLAT</a>
+                    <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">KEGIATAN</a>
+                    <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">BERITA & ARTIKEL KESEHATAN</a>
+                    <a href="#" class="text-sm font-medium text-gray-700 hover:text-blue-600">ABOUT RSUHO</a>
+                </nav>
+            </div>
+        </div>
+    </header>
 
   <form action="/appointments" method="post">
     <input type="hidden" name="redirect_to" value="<%= @redirect_to %>">
@@ -94,6 +205,19 @@
       <option value="<%= patient.id %>" <%= 'selected' if patient.id.to_s == @selected_patient_id %>><%= patient.name %></option>
       <% end %>
    </select>
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-2xl font-bold text-center mb-8 text-gray-900">Tambah Janji Temu Baru</h1>
+            <form action="/appointments" method="post" class="space-y-6">
+                <!-- Nama Pasien -->
+                <div>
+                    <label for="patient_id" class="block text-sm font-medium text-gray-700">Nama Pasien:</label>
+                    <select id="patient_id" name="patient_id">
+                        <option value="1">John Doe</option>
+                        <option value="2">Jane Smith</option>
+                    </select>
+                </div>
 
     <label for="doctor_id">Nama Dokter:</label>
     <select name="doctor_id" id="doctor_id" required>
@@ -101,18 +225,82 @@
         <option value="<%= doctor.id %>"><%= doctor.name %></option>
       <% end %>
     </select>
+                <!-- Nama Dokter -->
+                <div>
+                    <label for="doctor_id" class="block text-sm font-medium text-gray-700">Nama Dokter:</label>
+                    <select id="doctor_id" name="doctor_id">
+                        <option value="1">Dr. John Smith</option>
+                        <option value="2">Dr. Jane Doe</option>
+                    </select>
+                </div>
 
     <label for="date">Tanggal:</label>
     <input type="date" name="date" id="date" required>
+                <!-- Tanggal dan Waktu -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="date" class="block text-sm font-medium text-gray-700">Tanggal:</label>
+                        <input type="date" id="date" name="date">
+                    </div>
+                    <div>
+                        <label for="time" class="block text-sm font-medium text-gray-700">Waktu:</label>
+                        <input type="time" id="time" name="time">
+                    </div>
+                </div>
 
     <label for="time">Waktu:</label>
     <input type="time" name="time" id="time" required>
+                <!-- Deskripsi -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi:</label>
+                    <textarea id="description" name="description" rows="4"></textarea>
+                </div>
 
     <label for="description">Deskripsi:</label>
     <textarea name="description" id="description" required></textarea>
+                <!-- Tombol -->
+                <div class="flex justify-between">
+                    <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">Simpan Janji Temu</button>
+                    <a href="/appointments-view" class="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition">Batal</a>
+                </div>
+            </form>
+        </div>
+    </main>
 
     <button type="submit">Simpan Janji Temu</button>
     <a href="<%= params[:redirect_to] || '/appointments-view' %>" class="cancel-btn">Batal</a>
   </form>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <p class="mb-2"><i class="fas fa-map-marker-alt mr-2"></i> 123 Hospital Street, City</p>
+                    <p class="mb-2"><i class="fas fa-phone mr-2"></i> +1 234 567 890</p>
+                    <p class="mb-2"><i class="fas fa-envelope mr-2"></i> info@rsuho.com</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-gray-300">About Us</a></li>
+                        <li><a href="#" class="hover:text-gray-300">Services</a></li>
+                        <li><a href="#" class="hover:text-gray-300">FAQ</a></li>
+                        <li><a href="#" class="hover:text-gray-300">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <p class="mb-4">Stay connected with us:</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
