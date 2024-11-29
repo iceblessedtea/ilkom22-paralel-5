@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            width: 95%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #28a745;
+            outline: none;
+        }
+
+        button {
+            padding: 8px 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        h2 {
+            margin-top: 40px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button.delete-btn {
+            background-color: #dc3545;
+        }
+
+        button.edit-btn {
+            background-color: #ffc107;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Doctor Management System</h1>
+        <form id="doctorForm">
+            <input type="text" id="name" placeholder="Name" required>
+            <input type="text" id="specialization" placeholder="Specialization" required>
+            <input type="text" id="phone" placeholder="Phone" required>
+            <input type="number" id="work_since" placeholder="Year of Work" required>
+            <button type="submit">Add Doctor</button>
+        </form>
+
+        <h2>Doctor List</h2>
+        <table id="doctorTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Specialization</th>
+                    <th>Phone</th>
+                    <th>Year of Work</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data doctor akan ditampilkan di sini -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const doctorForm = document.getElementById('doctorForm');
+        const doctorTable = document.getElementById('doctorTable').getElementsByTagName('tbody')[0];
+        let isEditing = false;
+        let currentDoctorId = null;
+
+        // Load doctors
+        function loadDoctors() {
+            fetch('http://localhost:9293/doctors')
+                .then(response => response.json())
+                .then(data => {
+                    doctorTable.innerHTML = '';
+                    data.forEach(doctor => {
+                        const row = doctorTable.insertRow();
+                        row.innerHTML = `
+                            <td>${doctor.name}</td>
+                            <td>${doctor.specialization}</td>
+                            <td>${doctor.phone}</td>
+                            <td>${doctor.work_since}</td>
+                            <td>
+                                <button class="edit-btn" onclick="editDoctor(${doctor.id}, '${doctor.name}', '${doctor.specialization}', '${doctor.phone}', ${doctor.work_since})">Edit</button>
+                                <button class="delete-btn" onclick="deleteDoctor(${doctor.id})">Delete</button>
+                            </td>
+                        `;
+                    });
+                });
+        }
+
+        // Add doctor
+        function addDoctor(doctor) {
+            fetch('http://localhost:9293/doctors', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(doctor)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadDoctors();
+                    doctorForm.reset();
+                }
+            });
+        }
+
+        // Update doctor
+        function updateDoctor(doctor, id) {
+            fetch(`http://localhost:9293/doctors/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(doctor)
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadDoctors();
+                    doctorForm.reset();
+                    isEditing = false;
+                    currentDoctorId = null;
+                    document.querySelector('button[type="submit"]').textContent = 'Add Doctor';
+                }
+            });
+        }
+
+        // Handle form submit
+        doctorForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const doctor = {
+                name: document.getElementById('name').value,
+                specialization: document.getElementById('specialization').value,
+                phone: document.getElementById('phone').value,
+                work_since: document.getElementById('work_since').value
+            };
+
+            if (isEditing) {
+                updateDoctor(doctor, currentDoctorId);
+            } else {
+                addDoctor(doctor);
+            }
+        });
+
+        // Edit doctor
+        function editDoctor(id, name, specialization, phone, work_since) {
+            document.getElementById('name').value = name;
+            document.getElementById('specialization').value = specialization;
+            document.getElementById('phone').value = phone;
+            document.getElementById('work_since').value = work_since;
+
+            isEditing = true;
+            currentDoctorId = id;
+            document.querySelector('button[type="submit"]').textContent = 'Update Doctor';
+        }
+
+        // Delete doctor
+        function deleteDoctor(id) {
+            fetch(`http://localhost:9293/doctors/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadDoctors();
+                }
+            });
+        }
+
+        // Initial load
+        loadDoctors();
+    </script>
+</body>
+</html>
