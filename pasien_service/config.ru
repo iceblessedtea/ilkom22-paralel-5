@@ -1,2 +1,2 @@
-require_relative 'app'
-run PatientService::API.new
+require_relative 'app'  # Memuat file app.rb
+run PatientService      # Menjalankan aplikasi Sinatra

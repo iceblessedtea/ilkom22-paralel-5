@@ -6,57 +6,52 @@ set :database_file, 'config/database.yml'
 class Patient < ActiveRecord::Base
 end
 
-# Routes for Patients CRUD
-get '/' do
-  erb:'patients/home'
-end
+class PatientService < Sinatra::Base  # Pastikan aplikasi Sinatra ada dalam class PatientService
+  # Mendefinisikan route untuk aplikasi
+  get '/' do
+    erb :'patients/home'
+  end
 
-# Tampilkan daftar pasien
-get '/patients' do
-  @patients = Patient.all
-  erb :'patients/index'
-end
+  get '/patients' do
+    @patients = Patient.all
+    erb :'patients/index'
+  end
 
-# Tampilkan form untuk menambah pasien baru
-get '/patients/new' do
-  erb :'patients/new'
-end
-
-# Buat pasien baru
-post '/patients' do
-  patient = Patient.new(params)
-  if patient.save
-    redirect '/patients'
-  else
+  get '/patients/new' do
     erb :'patients/new'
   end
-end
 
-# Tampilkan detail pasien
-get '/patients/:id' do
-  @patient = Patient.find(params[:id])
-  erb :'patients/show'
-end
+  post '/patients' do
+    patient = Patient.new(params[:patient])
+    if patient.save
+      redirect '/patients'
+    else
+      erb :'patients/new'
+    end
+  end
 
-# Tampilkan form untuk mengedit pasien
-get '/patients/:id/edit' do
-  @patient = Patient.find(params[:id])
-  erb :'patients/edit'
-end
+  get '/patients/:id' do
+    @patient = Patient.find(params[:id])
+    erb :'patients/show'
+  end
 
-# Update pasien
-put '/patients/:id' do
-  @patient = Patient.find(params[:id])
-  if @patient.update(params)
-    redirect '/patients'
-  else
+  get '/patients/:id/edit' do
+    @patient = Patient.find(params[:id])
     erb :'patients/edit'
   end
-end
 
-# Hapus pasien
-delete '/patients/:id' do
-  @patient = Patient.find(params[:id])
-  @patient.destroy
-  redirect '/patients'
+  put '/patients/:id' do
+    @patient = Patient.find(params[:id])
+    if @patient.update(params[:patient])
+      redirect '/patients'
+    else
+      erb :'patients/edit'
+    end
+  end
+
+  delete '/patients/:id' do
+    @patient = Patient.find(params[:id])
+    @patient.destroy
+    redirect '/patients'
+  end
 end
