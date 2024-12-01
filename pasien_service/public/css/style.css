@@ -7,6 +7,7 @@ body {
     padding: 20px;
   }
   
+ 
   .title {
     text-align: center;
     color: #007bff; /* Warna biru */
@@ -60,3 +61,12 @@ body {
     opacity: 0.9;
   }
   
+  .container {
+    text-align: center;
+    background-color: #ffffff; /* Putih */
+    padding: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+  }

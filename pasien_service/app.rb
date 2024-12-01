@@ -6,8 +6,6 @@ set :database_file, 'config/database.yml'
 class Patient < ActiveRecord::Base
 end
 
-
-
 # Routes for Patients CRUD
 get '/' do
   erb:'patients/home'

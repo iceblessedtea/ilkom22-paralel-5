@@ -1,4 +1,0 @@
-# Gemfile
-source 'https://rubygems.org'
-gem 'sinatra' # untuk framework web Sinatra
-gem 'json'    # untuk merespons dalam format JSON
