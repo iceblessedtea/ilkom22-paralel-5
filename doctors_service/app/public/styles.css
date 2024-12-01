@@ -79,6 +79,26 @@ main {
     border-radius: 4px;
 }
 
+#add-doctor select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 16px;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5" width="10" height="10"><path fill="black" d="M2 5L0 0h4z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+}
+
+
 #add-doctor .buttons {
     display: flex;
     gap: 10px;
