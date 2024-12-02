@@ -4,15 +4,14 @@ require 'sequel'
 require 'sqlite3'
 require 'json'
 require 'time'
-require 'faye/websocket'
-require 'thread'
 
 module DoctorService
   class API < Sinatra::Base
     configure do
       enable :cross_origin
+      enable :method_override
       set :allow_methods, [:get, :post, :put, :delete, :options]
-      set :public_folder, File.dirname(__FILE__) + '/public' # Menentukan folder publik
+      set :public_folder, File.dirname(__FILE__) + '/public'
     end
 
     before do
@@ -25,21 +24,6 @@ module DoctorService
     # Tabel Dokter
     doctors = db[:doctors]
 
-    # WebSocket setup
-    connections = []
-
-    get '/ws' do
-      request.websocket do |ws|
-        ws.onopen { connections << ws }
-        ws.onclose { connections.delete(ws) }
-      end
-    end
-    
-    def broadcast(connections, message)
-      connections.each do |ws|
-        ws.send(message) if ws.open?
-      end
-    end
     # CORS preflight request
     options "*" do
       response.headers["Allow"] = "GET, POST, PUT, DELETE, OPTIONS"
@@ -47,82 +31,91 @@ module DoctorService
       200
     end
 
-    # Route untuk mengakses halaman utama 
+    # Route untuk halaman utama
     get '/' do
-      send_file File.join(settings.public_folder, 'index.html') 
+      erb :welcome
     end
-    
-    # Create 
-    post '/doctors' do
-      doctor_param = JSON.parse(request.body.read)
-      doctor_param['created_at'] = Time.now
-      doctor_param['updated_at'] = Time.now
 
-      max_id = doctors.max(:id) || 0  
-      doctor_param['id'] = max_id + 1 
+    # Route untuk menampilkan data dokter
+    get '/doctors' do
+      @doctors = doctors.all 
+      p @doctors
+      erb :doctors
+    end
+
+    # Route untuk form tambah dokter
+    get '/doctors/new' do
+      erb :new_doctor
+    end
+
+    # Route untuk menambah dokter
+    post '/doctors' do
+      if params[:name].strip.empty? || params[:specialization].strip.empty? || params[:phone].strip.empty? || params[:work_since].strip.empty?
+        halt 400, erb(:error, locals: { message: "Semua bidang harus diisi!" })
+      end
+    
+      doctor_param = {
+        name: params[:name],
+        specialization: params[:specialization],
+        phone: params[:phone],
+        work_since: params[:work_since].to_i,  
+        created_at: Time.now,
+        updated_at: Time.now
+      }
+
+      max_id = doctors.max(:id) || 0
+      doctor_param[:id] = max_id + 1
 
       res = doctors.insert(doctor_param)
-      id = doctors.max(:id)
 
-      if res 
-        new_doctor = doctors.where(id: id).first
-        broadcast(connections, { action: 'create', data: new_doctor }.to_json)
-        status 201
-        JSON.generate('success'=>true, 'doctor_id' => id)
+      if res
+        redirect to('/doctors')
       else
-        status 500
-        JSON.generate('success'=>false)
+        halt 500, erb(:error, locals: { message: "Gagal menambahkan dokter." })
       end
     end
 
-    # Read all 
-    get '/doctors' do
-      content_type :json
-      doctors.all.to_json
+    # Route untuk form edit dokter
+    get '/doctors/:id/edit' do
+      @doctor = doctors.where(id: params[:id]).first
+      halt 404, erb(:error, locals: { message: "Dokter tidak ditemukan." }) unless @doctor
+
+      erb :edit_doctor
     end
 
-    # Read by ID 
-    get '/doctors/:id' do
-      doctor = doctors.where(id: params['id']).first
-      if doctor
-        content_type :json
-        {id: doctor[:id], name: doctor[:name], specialization: doctor[:specialization], phone: doctor[:phone], work_since: doctor[:work_since], created_at: doctor[:created_at], updated_at: doctor[:updated_at]}.to_json
-      else
-        status 404
-        {error: "Doctor not found"}.to_json
-      end
-    end
-
-    # Update 
+    # Route untuk mengedit dokter
     put '/doctors/:id' do
-      doctor_param = JSON.parse(request.body.read)
-      doctor_param['updated_at'] = Time.now
+      doctor_param = {
+        name: params[:name],
+        specialization: params[:specialization],
+        phone: params[:phone],
+        work_since: params[:work_since].to_i,
+        updated_at: Time.now
+      }
 
-      res = doctors.where(id: params['id']).update(doctor_param)
+      res = doctors.where(id: params[:id]).update(doctor_param)
 
-      if res
-        updated_doctor = doctors.where(id: params['id']).first
-        broadcast(connections, { action: 'update', data: updated_doctor }.to_json)
-        status 200
-        JSON.generate('success'=>true)
+      if res > 0
+        redirect to('/doctors')
       else
-        status 500
-        JSON.generate('success'=>false)
+        halt 500, erb(:error, locals: { message: "Gagal mengupdate data dokter." })
       end
     end
 
-    # Delete 
+    # Route untuk menghapus dokter
     delete '/doctors/:id' do
-      res = doctors.where(id: params['id']).delete
+      res = doctors.where(id: params[:id]).delete
 
-      if res
-        broadcast(connections, { action: 'delete', data: { id: params['id'] } }.to_json)
-        status 200
-        JSON.generate('success'=>true)
+      if res > 0
+        redirect to('/doctors')
       else
-        status 500
-        JSON.generate('success'=>false)
+        halt 500, erb(:error, locals: { message: "Gagal menghapus data dokter." })
       end
+    end
+
+    # Error Handling
+    error do
+      erb :error, locals: { message: "Terjadi kesalahan pada server." }
     end
   end
 end
