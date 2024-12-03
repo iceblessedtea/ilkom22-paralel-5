@@ -1,19 +1,10 @@
 require 'sinatra'
-require 'sinatra/json'
-require './config/database'
-require './app/routes/dokter_routes'
+require_relative './api'
 
-# Main entry point
-class DokterService < Sinatra::Base
-  register Sinatra::Namespace
+set :port, 4567
 
-  # Include Dokter Routes
-  use DokterRoutes
-
-  # Default route
-  get '/' do
-    json message: 'Welcome to Dokter Service API'
-  end
+get '/' do
+  redirect '/dokters'
 end
 
-run DokterService.run!
+run Sinatra::Application.run!

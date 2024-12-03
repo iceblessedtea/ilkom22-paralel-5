@@ -1,42 +1,36 @@
 require 'sinatra/base'
-require 'sinatra/namespace'
-require './app/controllers/dokter_controller'
+require 'sinatra/json'
+require_relative '../models/dokter'
 
 class DokterRoutes < Sinatra::Base
-  register Sinatra::Namespace
+  get '/dokters' do
+    @dokters = Dokter.all
+    erb :'dokters/index'
+  end
 
-  namespace '/dokters' do
-    # List all dokters
-    get '' do
-      json DokterController.index
-    end
+  get '/dokters/new' do
+    @dokter = Dokter.new
+    erb :'dokters/form'
+  end
 
-    # Show specific dokter
-    get '/:id' do
-      dokter = DokterController.show(params[:id])
-      halt 404, json(message: 'Dokter not found') unless dokter
-      json dokter
-    end
+  post '/dokters' do
+    Dokter.create(params.slice('nama', 'spesialisasi', 'nomor_telepon'))
+    redirect '/dokters'
+  end
 
-    # Create a new dokter
-    post '' do
-      new_dokter = DokterController.create(params)
-      halt 400, json(message: 'Invalid data') unless new_dokter
-      json new_dokter
-    end
+  get '/dokters/:id/edit' do
+    @dokter = Dokter[params[:id]]
+    erb :'dokters/form'
+  end
 
-    # Update dokter
-    put '/:id' do
-      updated_dokter = DokterController.update(params[:id], params)
-      halt 404, json(message: 'Dokter not found') unless updated_dokter
-      json updated_dokter
-    end
+  put '/dokters/:id' do
+    dokter = Dokter[params[:id]]
+    dokter.update(params.slice('nama', 'spesialisasi', 'nomor_telepon'))
+    redirect '/dokters'
+  end
 
-    # Delete dokter
-    delete '/:id' do
-      deleted_dokter = DokterController.delete(params[:id])
-      halt 404, json(message: 'Dokter not found') unless deleted_dokter
-      json message: 'Dokter deleted successfully'
-    end
+  delete '/dokters/:id' do
+    Dokter[params[:id]].delete
+    redirect '/dokters'
   end
 end
