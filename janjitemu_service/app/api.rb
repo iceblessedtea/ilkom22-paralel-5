@@ -10,6 +10,8 @@ require_relative 'models/doctor'
 require_relative 'models/appointment'
 require 'dotenv/load'
 
+set :port, 5678 # Ganti dengan port yang Anda inginkan
+
 module JanjiTemu
   class API < Sinatra::Base
     configure do
@@ -218,7 +220,12 @@ module JanjiTemu
       erb :pasien_appointments_view
     end
 
-    
+    #Route ke alnding page
+    get '/LandingPage' do
+      content_type :html
+      erb :landing_Page
+    end
+
     get '/patient-appointments-view' do
       redirect '/appointments-viewpasien'
     end

@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/activerecord'
 
+set :bind, '0.0.0.0' # Mengizinkan akses dari semua interface
 set :database_file, 'config/database.yml'
 
 class Patient < ActiveRecord::Base
