@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Data Dokter</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <a href="javascript:history.back()" class="btn btn-secondary mb-4">Back</a>
+    <h2 class="text-center my-4">Edit Data Dokter</h2>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <form action="/doctors/<%= @doctor[:id] %>" method="POST">
+          <input type="hidden" name="_method" value="PUT">
+          <div class="mb-3">
+            <label for="name" class="form-label">Nama Dokter:</label>
+            <input type="text" class="form-control" id="name" name="name" value="<%= @doctor[:name] %>" placeholder="Masukkan nama dokter" required>
+          </div>
+          <div class="mb-3">
+            <label for="specialization" class="form-label">Spesialisasi:</label>
+            <select class="form-select" id="specialization" name="specialization" required>
+              <option value="" disabled>Pilih spesialisasi</option>
+              <option value="Spesialis Alergi dan Imunologi" <%= @doctor[:specialization] == 'Spesialis Alergi dan Imunologi' ? 'selected' : '' %>>Spesialis Alergi dan Imunologi</option>
+              <option value="Spesialis Anestesiologi" <%= @doctor[:specialization] == 'Spesialis Anestesiologi' ? 'selected' : '' %>>Spesialis Anestesiologi</option>
+              <option value="Spesialis Jantung" <%= @doctor[:specialization] == 'Spesialis Jantung' ? 'selected' : '' %>>Spesialis Jantung</option>
+              <option value="Spesialis Bedah Kardiotoraks" <%= @doctor[:specialization] == 'Spesialis Bedah Kardiotoraks' ? 'selected' : '' %>>Spesialis Bedah Kardiotoraks</option>
+              <option value="Spesialis Kulit" <%= @doctor[:specialization] == 'Spesialis Kulit' ? 'selected' : '' %>>Spesialis Kulit</option>
+              <option value="Ahli Endokrinologi" <%= @doctor[:specialization] == 'Ahli Endokrinologi' ? 'selected' : '' %>>Ahli Endokrinologi</option>
+              <option value="Spesialis Saluran Pencernaan" <%= @doctor[:specialization] == 'Spesialis Saluran Pencernaan' ? 'selected' : '' %>>OrSpesialis Saluran Pencernaantopedi</option>
+              <option value="Dokter Umum" <%= @doctor[:specialization] == 'Dokter Umum' ? 'selected' : '' %>>Dokter Umum</option>
+              <option value="Spesialis THT" <%= @doctor[:specialization] == 'Spesialis THT' ? 'selected' : '' %>>Spesialis THT</option>
+              <option value="Spesialis Kandungan & Kebidanan" <%= @doctor[:specialization] == 'Spesialis Kandungan & Kebidanan' ? 'selected' : '' %>>Spesialis Kandungan & Kebidanan</option>
+              <option value="Ahli Saraf" <%= @doctor[:specialization] == 'Ahli Saraf' ? 'selected' : '' %>>Ahli Saraf</option>
+              <option value="Dokter Anak" <%= @doctor[:specialization] == 'Dokter Anak' ? 'selected' : '' %>>Dokter Anak</option>
+              <option value="Spesialis Ortopedi" <%= @doctor[:specialization] == 'Spesialis Ortopedi' ? 'selected' : '' %>>Spesialis Ortopedi</option>
+              <option value="Spesialis Jiwa" <%= @doctor[:specialization] == 'Spesialis Jiwa' ? 'selected' : '' %>>Spesialis Jiwa</option>
+              <option value="Dokter Gigi" <%= @doctor[:specialization] == 'Dokter Gigi' ? 'selected' : '' %>>Dokter Gigi</option>
+              <option value="Psikolog Klinis" <%= @doctor[:specialization] == 'Psikolog Klinis' ? 'selected' : '' %>>Psikolog Klinis</option>
+              <option value="Spesialis Paru" <%= @doctor[:specialization] == 'Spesialis Paru' ? 'selected' : '' %>>Spesialis Paru</option>
+              <option value="Spesialis Urologi" <%= @doctor[:specialization] == 'Spesialis Urologi' ? 'selected' : '' %>>Spesialis Urologi</option>
+              <option value="Spesialis PD Gastroenterologi - Hepatologi" <%= @doctor[:specialization] == 'Spesialis PD Gastroenterologi - Hepatologi' ? 'selected' : '' %>>Spesialis PD Gastroenterologi - Hepatologi</option>
+              <option value="Spesialis Gizi Klinik" <%= @doctor[:specialization] == 'Spesialis Gizi Klinik' ? 'selected' : '' %>>Spesialis Gizi Klinik</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Nomor Telepon:</label>
+            <input type="text" class="form-control" id="phone" name="phone" value="<%= @doctor[:phone] %>" placeholder="Masukkan nomor telepon" required>
+          </div>
+          <div class="mb-3">
+            <label for="work_since" class="form-label">Tahun Mulai:</label>
+            <input type="number" class="form-control" id="work_since" name="work_since" value="<%= @doctor[:work_since] %>" placeholder="Tahun mulai bekerja" required>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+            <a href="/" class="btn btn-danger">Batal</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

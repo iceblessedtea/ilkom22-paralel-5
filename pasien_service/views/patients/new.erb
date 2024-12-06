@@ -1,0 +1,83 @@
+<head>
+  <!-- Link ke CDN Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Styling tambahan untuk form */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+      margin-top: 30px;
+    }
+
+    h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-control {
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-label {
+      font-weight: bold;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      border-color: #6c757d;
+    }
+
+    .btn-success:hover, .btn-secondary:hover {
+      opacity: 0.9;
+    }
+
+    .mb-3 {
+      margin-bottom: 1.5rem;
+    }
+
+    .back-link {
+      text-align: center;
+      display: block;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+
+<!-- views/patients/new.erb -->
+<div class="container">
+  <h2>Add New Patient</h2>
+
+  <form action="/patients" method="POST">
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+    <button type="submit" class="btn btn-success">Create Patient</button>
+  </form>
+  
+  <a href="/patients" class="btn btn-secondary back-link">Back to Patient List</a>
+</div>

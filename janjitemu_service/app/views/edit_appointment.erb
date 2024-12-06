@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Janji Temu</title>
+  <style>
+    body {
+      font-family: 'Helvetica Now', sans-serif;
+      background-color: #f7faff;
+      color: #052552;
+      margin: 40px;
+    }
+    h1 {
+      text-align: center;
+      color: #0b60be;
+    }
+    .form-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #052552;
+    }
+    select, input[type="date"], input[type="time"], input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      background-color: #e9f0fa;
+      color: #052552;
+    }
+    .submit-btn {
+      background-color: #0b60be;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .submit-btn:hover {
+      background-color: #052552;
+    }
+    .cancel-btn {
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      padding: 10px 20px;
+      color: white;
+      background-color: #0b60be;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .cancel-btn:hover {
+      background-color: #052552;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Edit Janji Temu</h1>
+    <form action="/appointments/<%= @appointment.id %>" method="post">
+      <div class="form-group">
+        <label for="patient_id">Pasien:</label>
+        <select name="patient_id" id="patient_id" required>
+          <% @patients.each do |patient| %>
+            <option value="<%= patient.id %>" <%= 'selected' if patient.id == @appointment.patient_id %>><%= patient.name %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="doctor_id">Dokter:</label>
+        <select name="doctor_id" id="doctor_id" required>
+          <% @doctors.each do |doctor| %>
+            <option value="<%= doctor.id %>" <%= 'selected' if doctor.id == @appointment.doctor_id %>><%= doctor.name %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="date">Tanggal:</label>
+        <input type="date" id="date" name="date" value="<%= @appointment.date %>" required>
+      </div>
+
+      <div class="form-group">
+        <label for="time">Waktu:</label>
+        <input type="time" id="time" name="time" value="<%= @appointment.time %>" required>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Deskripsi:</label>
+        <input type="text" id="description" name="description" value="<%= @appointment.description %>" required>
+      </div>
+
+      <button type="submit" class="submit-btn">Update Janji Temu</button>
+      <a href="/appointments-view" class="cancel-btn">Batal</a>
+    </form>
+  </div>
+</body>
+</html>

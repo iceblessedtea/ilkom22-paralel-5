@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tambah Dokter Baru</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <a href="javascript:history.back()" class="btn btn-secondary mb-4">Back</a>
+    <h2 class="text-center my-4">Tambah Dokter Baru</h2>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <form action="/doctors" method="POST">
+          <div class="mb-3">
+            <label for="name" class="form-label">Nama Dokter:</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Masukkan nama dokter" required>
+          </div>
+          <div class="mb-3">
+            <label for="specialization" class="form-label">Spesialisasi:</label>
+            <select class="form-select" id="specialization" name="specialization" required>
+              <option value="" disabled selected>Pilih spesialisasi</option>
+              <option value="Spesialis Alergi dan Imunologi">Spesialis Alergi dan Imunologi</option>
+                <option value="Spesialis Anestesiologi">Spesialis Anestesiologi</option>
+                <option value="Spesialis Jantung">Spesialis Jantung</option>
+                <option value="Spesialis Bedah Kardiotoraks">Spesialis Bedah Kardiotoraks</option>
+                <option value="Spesialis Kulit">Spesialis Kulit</option>
+                <option value="Ahli Endokrinologi">Ahli Endokrinologi</option>
+                <option value="Spesialis Saluran Pencernaan">Spesialis Saluran Pencernaan</option>
+                <option value="Dokter Umum">Dokter Umum</option>
+                <option value="Spesialis THT">Spesialis THT</option>
+                <option value="Spesialis Kandungan & Kebidanan">Spesialis Kandungan & Kebidanan</option>
+                <option value="Ahli Saraf">Ahli Saraf</option>
+                <option value="Dokter Anak">Dokter Anak</option>
+                <option value="Spesialis Ortopedi">Spesialis Ortopedi</option>
+                <option value="Spesialis Jiwa">Spesialis Jiwa</option>
+                <option value="Dokter Gigi">Dokter Gigi</option>
+                <option value="Psikolog Klinis">Psikolog Klinis</option>
+                <option value="Spesialis Paru">Spesialis Paru</option>
+                <option value="Spesialis Urologi">Spesialis Urologi</option>
+                <option value="Spesialis PD Gastroenterologi - Hepatologi">Spesialis PD Gastroenterologi - Hepatologi</option>
+                <option value="Spesialis Gizi Klinik">Spesialis Gizi Klinik</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Nomor Telepon:</label>
+            <input type="text" class="form-control" id="phone" name="phone" placeholder="Masukkan nomor telepon" required>
+          </div>
+          <div class="mb-3">
+            <label for="work_since" class="form-label">Tahun Mulai:</label>
+            <input type="number" class="form-control" id="work_since" name="work_since" placeholder="Tahun mulai bekerja" required>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-success">Simpan Data Dokter</button>
+            <a href="/" class="btn btn-danger">Batal</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
