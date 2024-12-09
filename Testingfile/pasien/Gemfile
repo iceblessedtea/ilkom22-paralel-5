@@ -1,7 +1,0 @@
-# Gemfile
-source 'https://rubygems.org'
-
-gem 'sinatra'
-gem 'sinatra-activerecord'  # Mengintegrasikan ActiveRecord dengan Sinatra
-gem 'sqlite3'  # Database SQLite
-gem 'rake'  # Digunakan untuk menjalankan task migrasi

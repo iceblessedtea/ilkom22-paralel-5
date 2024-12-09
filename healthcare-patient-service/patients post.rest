@@ -1,5 +1,0 @@
-POST http://localhost:4567/patients
-Content-Type: application/x-www-form-urlencoded
-
-name=Alice&age=35&address=123 Main St&phone=555-1234
-

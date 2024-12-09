@@ -1,16 +1,19 @@
 <!-- views/patients/edit.erb -->
-<h2>Edit Patient</h2>
+<h2 class="title">Edit Patient</h2>
 
-<form action="/patients/<%= @patient.id %>" method="POST">
+<form action="/patients/<%= @patient.id %>" method="POST" class="form-container">
   <input type="hidden" name="_method" value="PUT">
+  
   <div class="mb-3">
     <label for="name" class="form-label">Name</label>
     <input type="text" class="form-control" id="name" name="name" value="<%= @patient.name %>" required>
   </div>
+  
   <div class="mb-3">
     <label for="email" class="form-label">Email</label>
     <input type="email" class="form-control" id="email" name="email" value="<%= @patient.email %>" required>
   </div>
+  
   <button type="submit" class="btn btn-success">Update Patient</button>
+  <a href="/patients" class="btn btn-secondary">Back to Patient List</a>
 </form>
-<a href="/patients" class="btn btn-secondary">Back to Patient List</a>

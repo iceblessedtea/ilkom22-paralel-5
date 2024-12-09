@@ -3,6 +3,10 @@ GEM
   specs:
     base64 (0.2.0)
     bigdecimal (3.1.8)
+    eventmachine (1.2.7)
+    faye-websocket (0.11.3)
+      eventmachine (>= 0.12.0)
+      websocket-driver (>= 0.5.1)
     json (2.7.2)
     mustermann (3.0.3)
       ruby2_keywords (~> 0.0.1)
@@ -28,11 +32,15 @@ GEM
     sqlite3 (2.1.0-x64-mingw-ucrt)
     tilt (2.4.0)
     webrick (1.8.2)
+    websocket-driver (0.7.6)
+      websocket-extensions (>= 0.1.0)
+    websocket-extensions (0.1.5)
 
 PLATFORMS
   x64-mingw-ucrt
 
 DEPENDENCIES
+  faye-websocket
   json (~> 2.7)
   rackup (~> 2.1)
   sequel (~> 5.85)

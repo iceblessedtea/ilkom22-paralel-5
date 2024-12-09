@@ -1,7 +1,3 @@
 development:
   adapter: sqlite3
-  encoding: utf8
-  database: patient_service_development
-  username: root
-  password: 
-  host: localhost
+  database: db/patients.db

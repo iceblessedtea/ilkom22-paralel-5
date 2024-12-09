@@ -3,6 +3,7 @@ GEM
   specs:
     base64 (0.2.0)
     bigdecimal (3.1.8)
+    dotenv (3.1.4)
     json (2.7.3)
     multi_json (1.15.0)
     mustermann (3.0.3)
@@ -40,6 +41,7 @@ PLATFORMS
   x64-mingw-ucrt
 
 DEPENDENCIES
+  dotenv
   json (~> 2.7)
   rackup (~> 2.1)
   sequel (~> 5.85)

@@ -8,6 +8,7 @@ require 'sqlite3'
 require_relative 'models/patient'
 require_relative 'models/doctor'
 require_relative 'models/appointment'
+require 'dotenv/load'
 
 module JanjiTemu
   class API < Sinatra::Base
@@ -189,6 +190,7 @@ module JanjiTemu
       erb :edit_appointment
     end
     
+    # Route untuk menampilkan view dari pasien
     get '/appointments-view' do
       content_type :html
       @appointments = Appointment.all
@@ -196,7 +198,8 @@ module JanjiTemu
       @doctors = Doctor.all
       erb :appointments_index
     end
-
+    
+# Route untuk menampilkan halaman new appointment
     get '/appointments/new' do
       content_type :html
       @patients = Patient.all
@@ -206,6 +209,7 @@ module JanjiTemu
       erb :new_appointment
     end
 
+    # Route untuk menampilkan view appointment dari pasien
     get '/appointments-viewpasien' do
       content_type :html
       @appointments = Appointment.where(patient_id: current_patient.id)
@@ -214,6 +218,7 @@ module JanjiTemu
       erb :pasien_appointments_view
     end
 
+    
     get '/patient-appointments-view' do
       redirect '/appointments-viewpasien'
     end

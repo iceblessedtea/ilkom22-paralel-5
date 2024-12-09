@@ -13,7 +13,7 @@ end
 def show_table_schema(db, table_name)
   puts "\nStruktur Tabel '#{table_name}':"
   db.execute("PRAGMA table_info(#{table_name})") do |column|
-    puts column.join(" | ")
+  
   end
 end
 

@@ -137,7 +137,7 @@
 
         // Load doctors
         function loadDoctors() {
-            fetch('http://localhost:4567/doctors')
+            fetch('http://localhost:9293/doctors')
                 .then(response => response.json())
                 .then(data => {
                     doctorTable.innerHTML = '';
@@ -159,7 +159,7 @@
 
         // Add doctor
         function addDoctor(doctor) {
-            fetch('http://localhost:4567/doctors', {
+            fetch('http://localhost:9293/doctors', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -177,7 +177,7 @@
 
         // Update doctor
         function updateDoctor(doctor, id) {
-            fetch(`http://localhost:4567/doctors/${id}`, {
+            fetch(`http://localhost:9293/doctors/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -227,7 +227,7 @@
 
         // Delete doctor
         function deleteDoctor(id) {
-            fetch(`http://localhost:4567/doctors/${id}`, {
+            fetch(`http://localhost:9293/doctors/${id}`, {
                 method: 'DELETE'
             })
             .then(response => {
