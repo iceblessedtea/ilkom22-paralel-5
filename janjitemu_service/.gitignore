@@ -1,0 +1,16 @@
+# Abaikan file .env agar tidak di-push ke repo
+.env
+
+# Abaikan database file
+*.db
+
+# Abaikan file log
+*.log
+
+# Abaikan file yang dihasilkan oleh bundler
+Gemfile.lock
+
+# Abaikan folder dan file sementara lainnya
+/tmp
+/.bundle
+/log

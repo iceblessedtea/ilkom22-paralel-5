@@ -1,0 +1,9 @@
+<!-- views/patients/show.erb -->
+<h2>Patient Details</h2>
+
+<p><strong>ID:</strong> <%= @patient.id %></p>
+<p><strong>Name:</strong> <%= @patient.name %></p>
+<p><strong>Email:</strong> <%= @patient.email %></p>
+
+<a href="/patients/<%= @patient.id %>/edit" class="btn btn-warning">Edit</a>
+<a href="/patients" class="btn btn-secondary">Back to Patient List</a>

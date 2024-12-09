@@ -1,0 +1,2 @@
+require 'sinatra/activerecord/rake'
+require './app' # Pastikan file 'app.rb' ada di direktori proyek
