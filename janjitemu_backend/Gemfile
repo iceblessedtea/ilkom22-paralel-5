@@ -1,9 +1,0 @@
-# frozen_string_literal: true
-
-source "https://rubygems.org"
-
-gem "sinatra", "~> 4.0"
-gem "json", "~> 2.7"
-gem 'sqlite3'
-gem 'activerecord', '~> 7.2'  # Atau versi spesifik yang kamu gunakan
-gem 'rake'

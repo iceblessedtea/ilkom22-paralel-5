@@ -1,2 +1,0 @@
-api: ruby app/api.rb
-rackup: bundle exec rackup --port=9090
