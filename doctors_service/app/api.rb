@@ -31,17 +31,41 @@ module DoctorService
       200
     end
 
+    # Helper method untuk response format
+    def respond_with(data, format: :html)
+      if format == :json
+        content_type :json
+        data.to_json
+      else
+        content_type :html
+        erb :response, locals: { data: data }
+      end
+    end
+
     # Route untuk halaman utama
     get '/' do
-      erb :welcome
+      format = request.accept.first.to_sym
+    
+      if format == :json
+        content_type :json
+        { message: 'Welcome to the Doctor Service API' }.to_json
+      else
+        erb :welcome
+      end
     end
 
     # ========== DOCTOR ROUTES ==========
 
     # Tampilkan semua dokter
     get '/doctors' do
+      format = request.accept.first.to_sym
       @doctors = Doctor.all
-      erb :doctors
+
+      if format == :json
+        respond_with(@doctors, format: :json)
+      else
+        erb :doctors
+      end
     end
 
     # Form tambah dokter
@@ -106,8 +130,14 @@ module DoctorService
 
     # Tampilkan semua ruang
     get '/rooms' do
+      format = request.accept.first.to_sym
       @rooms = Room.all
-      erb :rooms
+
+      if format == :json
+        respond_with(@rooms, format: :json)
+      else
+        erb :rooms
+      end
     end
 
     # Form tambah ruang
@@ -117,7 +147,7 @@ module DoctorService
 
     # Tambah ruang
     post '/rooms' do
-      room = Room.new(name: params[:name]) 
+      room = Room.new(name: params[:name])
       if room.save
         redirect '/rooms'
       else
@@ -138,9 +168,7 @@ module DoctorService
       room = Room[params[:id]]
       halt 404, erb(:error, locals: { message: "Ruang tidak ditemukan." }) unless room
 
-      if room.update(
-        name: params[:name]
-      )
+      if room.update(name: params[:name])
         redirect '/rooms'
       else
         halt 400, erb(:error, locals: { message: "Gagal mengupdate ruang: #{room.errors.full_messages.join(', ')}" })
@@ -160,11 +188,17 @@ module DoctorService
     end
 
     # ========== TIMESLOT ROUTES ==========
-
+    
     # Tampilkan semua waktu
     get '/timeslots' do
+      format = request.accept.first.to_sym
       @timeslots = Timeslot.all
-      erb :timeslots
+
+      if format == :json
+        respond_with(@timeslots, format: :json)
+      else
+        erb :timeslots
+      end
     end
 
     # Form tambah waktu
@@ -221,11 +255,17 @@ module DoctorService
 
     # Tampilkan jadwal
     get '/schedules' do
+      format = request.accept.first.to_sym
       @schedules = Schedule.all
       @doctors = Doctor.all
       @rooms = Room.all
       @timeslots = Timeslot.all
-      erb :schedules
+
+      if format == :json
+        respond_with(@schedules, format: :json)
+      else
+        erb :schedules
+      end
     end
 
     # Form tambah jadwal
@@ -264,7 +304,7 @@ module DoctorService
     put '/schedules/:id' do
       schedule = Schedule[params[:id]]
       halt 404, erb(:error, locals: { message: "Jadwal tidak ditemukan." }) unless schedule
-    
+
       if schedule.update(
         doctor_id: params[:doctor_id],
         room_id: params[:room_id],
@@ -276,7 +316,7 @@ module DoctorService
       else
         halt 400, erb(:error, locals: { message: "Gagal mengupdate jadwal: #{schedule.errors.full_messages.join(', ')}" })
       end
-    end    
+    end
 
     # Hapus jadwal
     delete '/schedules/:id' do
