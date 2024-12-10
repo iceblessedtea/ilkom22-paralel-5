@@ -39,10 +39,10 @@
     tr:hover {
       background-color: #e6f0ff;
     }
-    .add-appointment {
+    .add-appointment, .navigate-btn {
       display: block;
       width: 220px;
-      margin: 20px auto;
+      margin: 10px auto;
       text-align: center;
       background-color: #0b60be;
       color: white;
@@ -53,7 +53,7 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
       transition: background-color 0.3s ease;
     }
-    .add-appointment:hover {
+    .add-appointment:hover, .navigate-btn:hover {
       background-color: #052552;
     }
     .edit-btn, .delete-btn {
@@ -85,7 +85,7 @@
       body {
         margin: 20px;
       }
-      .add-appointment {
+      .add-appointment, .navigate-btn {
         width: 100%;
       }
       table, th, td {
@@ -124,5 +124,9 @@
     <% end %>
   </table>
   <a href="/appointments/new?redirect_to=/appointments-view" class="add-appointment">Tambah Janji Temu Baru</a>
+
+  <!-- Tombol tambahan untuk navigasi -->
+  <a href="http://localhost:9091" class="navigate-btn" target="_blank">Ke Service Pasien</a>
+  <a href="/doctors_service" class="navigate-btn" target="_blank">Ke Service Dokter</a>
 </body>
 </html>
