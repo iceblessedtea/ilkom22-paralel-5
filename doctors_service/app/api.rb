@@ -32,45 +32,22 @@ module DoctorService
     end
 
     # Helper method untuk response format
-    def respond_with(data, format: :html)
-      if format == :json
-        content_type :json
-        data.to_json
-      else
-        content_type :html
-        erb :response, locals: { data: data }
-      end
+    def respond_with(data)
+      content_type :json
+      data.to_json
     end
 
     # Route untuk halaman utama
     get '/' do
-      format = request.accept.first.to_sym
-    
-      if format == :json
-        content_type :json
-        { message: 'Welcome to the Doctor Service API' }.to_json
-      else
-        erb :welcome
-      end
+      respond_with({ message: 'Welcome to the Doctor Service API' })
     end
 
     # ========== DOCTOR ROUTES ==========
 
     # Tampilkan semua dokter
     get '/doctors' do
-      format = request.accept.first.to_sym
       @doctors = Doctor.all
-
-      if format == :json
-        respond_with(@doctors, format: :json)
-      else
-        erb :doctors
-      end
-    end
-
-    # Form tambah dokter
-    get '/doctors/new' do
-      erb :new_doctor
+      respond_with(@doctors)
     end
 
     # Tambah dokter
@@ -83,24 +60,16 @@ module DoctorService
       )
 
       if doctor.save
-        redirect '/doctors'
+        respond_with({ message: 'Dokter berhasil ditambahkan', doctor: doctor })
       else
-        halt 400, erb(:error, locals: { message: "Gagal menambahkan dokter: #{doctor.errors.full_messages.join(', ')}" })
+        halt 400, respond_with({ message: "Gagal menambahkan dokter: #{doctor.errors.full_messages.join(', ')}" })
       end
-    end
-
-    # Form edit dokter
-    get '/doctors/:id/edit' do
-      @doctor = Doctor[params[:id]]
-      halt 404, erb(:error, locals: { message: "Dokter tidak ditemukan." }) unless @doctor
-
-      erb :edit_doctor
     end
 
     # Edit dokter
     put '/doctors/:id' do
       doctor = Doctor[params[:id]]
-      halt 404, erb(:error, locals: { message: "Dokter tidak ditemukan." }) unless doctor
+      halt 404, respond_with({ message: "Dokter tidak ditemukan." }) unless doctor
 
       if doctor.update(
         name: params[:name],
@@ -108,21 +77,21 @@ module DoctorService
         phone: params[:phone],
         work_since: params[:work_since]
       )
-        redirect '/doctors'
+        respond_with({ message: 'Dokter berhasil diperbarui', doctor: doctor })
       else
-        halt 400, erb(:error, locals: { message: "Gagal mengupdate dokter: #{doctor.errors.full_messages.join(', ')}" })
+        halt 400, respond_with({ message: "Gagal mengupdate dokter: #{doctor.errors.full_messages.join(', ')}" })
       end
     end
 
     # Hapus dokter
     delete '/doctors/:id' do
       doctor = Doctor[params[:id]]
-      halt 404, erb(:error, locals: { message: "Dokter tidak ditemukan." }) unless doctor
+      halt 404, respond_with({ message: "Dokter tidak ditemukan." }) unless doctor
 
       if doctor.destroy
-        redirect '/doctors'
+        respond_with({ message: 'Dokter berhasil dihapus' })
       else
-        halt 500, erb(:error, locals: { message: "Gagal menghapus dokter." })
+        halt 500, respond_with({ message: "Gagal menghapus dokter." })
       end
     end
 
@@ -130,60 +99,41 @@ module DoctorService
 
     # Tampilkan semua ruang
     get '/rooms' do
-      format = request.accept.first.to_sym
       @rooms = Room.all
-
-      if format == :json
-        respond_with(@rooms, format: :json)
-      else
-        erb :rooms
-      end
-    end
-
-    # Form tambah ruang
-    get '/rooms/new' do
-      erb :new_room
+      respond_with(@rooms)
     end
 
     # Tambah ruang
     post '/rooms' do
       room = Room.new(name: params[:name])
       if room.save
-        redirect '/rooms'
+        respond_with({ message: 'Ruang berhasil ditambahkan', room: room })
       else
-        halt 400, erb(:error, locals: { message: "Gagal menambahkan ruang: #{room.errors.full_messages.join(', ')}" })
+        halt 400, respond_with({ message: "Gagal menambahkan ruang: #{room.errors.full_messages.join(', ')}" })
       end
-    end
-
-    # Form edit ruang
-    get '/rooms/:id/edit' do
-      @room = Room[params[:id]]
-      halt 404, erb(:error, locals: { message: "Ruang tidak ditemukan." }) unless @room
-
-      erb :edit_room
     end
 
     # Edit ruang
     put '/rooms/:id' do
       room = Room[params[:id]]
-      halt 404, erb(:error, locals: { message: "Ruang tidak ditemukan." }) unless room
+      halt 404, respond_with({ message: "Ruang tidak ditemukan." }) unless room
 
       if room.update(name: params[:name])
-        redirect '/rooms'
+        respond_with({ message: 'Ruang berhasil diperbarui', room: room })
       else
-        halt 400, erb(:error, locals: { message: "Gagal mengupdate ruang: #{room.errors.full_messages.join(', ')}" })
+        halt 400, respond_with({ message: "Gagal mengupdate ruang: #{room.errors.full_messages.join(', ')}" })
       end
     end
 
     # Hapus ruang
     delete '/rooms/:id' do
       room = Room[params[:id]]
-      halt 404, erb(:error, locals: { message: "Ruang tidak ditemukan." }) unless room
+      halt 404, respond_with({ message: "Ruang tidak ditemukan." }) unless room
 
       if room.destroy
-        redirect '/rooms'
+        respond_with({ message: 'Ruang berhasil dihapus' })
       else
-        halt 500, erb(:error, locals: { message: "Gagal menghapus ruang." })
+        halt 500, respond_with({ message: "Gagal menghapus ruang." })
       end
     end
 
@@ -191,63 +141,44 @@ module DoctorService
     
     # Tampilkan semua waktu
     get '/timeslots' do
-      format = request.accept.first.to_sym
       @timeslots = Timeslot.all
-
-      if format == :json
-        respond_with(@timeslots, format: :json)
-      else
-        erb :timeslots
-      end
-    end
-
-    # Form tambah waktu
-    get '/timeslots/new' do
-      erb :new_timeslot
+      respond_with(@timeslots)
     end
 
     # Tambah waktu
     post '/timeslots' do
       timeslot = Timeslot.new(start_time: params[:start_time], end_time: params[:end_time]) 
       if timeslot.save
-        redirect '/timeslots'
+        respond_with({ message: 'Waktu berhasil ditambahkan', timeslot: timeslot })
       else
-        halt 400, erb(:error, locals: { message: "Gagal menambahkan waktu: #{timeslot.errors.full_messages.join(', ')}" })
+        halt 400, respond_with({ message: "Gagal menambahkan waktu: #{timeslot.errors.full_messages.join(', ')}" })
       end
-    end
-
-    # Form edit waktu
-    get '/timeslots/:id/edit' do
-      @timeslot = Timeslot[params[:id]]
-      halt 404, erb(:error, locals: { message: "Waktu tidak ditemukan." }) unless @timeslot
-
-      erb :edit_timeslot
     end
 
     # Edit waktu
     put '/timeslots/:id' do
       timeslot = Timeslot[params[:id]]
-      halt 404, erb(:error, locals: { message: "Waktu tidak ditemukan." }) unless timeslot
+      halt 404, respond_with({ message: "Waktu tidak ditemukan." }) unless timeslot
 
       if timeslot.update(
         start_time: params[:start_time],
         end_time: params[:end_time]
       )
-        redirect '/timeslots'
+        respond_with({ message: 'Waktu berhasil diperbarui', timeslot: timeslot })
       else
-        halt 400, erb(:error, locals: { message: "Gagal mengupdate waktu: #{timeslot.errors.full_messages.join(', ')}" })
+        halt 400, respond_with({ message: "Gagal mengupdate waktu: #{timeslot.errors.full_messages.join(', ')}" })
       end
     end
 
     # Hapus waktu
     delete '/timeslots/:id' do
       timeslot = Timeslot[params[:id]]
-      halt 404, erb(:error, locals: { message: "Waktu tidak ditemukan." }) unless timeslot
+      halt 404, respond_with({ message: "Waktu tidak ditemukan." }) unless timeslot
 
       if timeslot.destroy
-        redirect '/timeslots'
+        respond_with({ message: 'Waktu berhasil dihapus' })
       else
-        halt 500, erb(:error, locals: { message: "Gagal menghapus waktu." })
+        halt 500, respond_with({ message: "Gagal menghapus waktu." })
       end
     end
 
@@ -255,22 +186,11 @@ module DoctorService
 
     # Tampilkan jadwal
     get '/schedules' do
-      format = request.accept.first.to_sym
       @schedules = Schedule.all
       @doctors = Doctor.all
       @rooms = Room.all
       @timeslots = Timeslot.all
-
-      if format == :json
-        respond_with(@schedules, format: :json)
-      else
-        erb :schedules
-      end
-    end
-
-    # Form tambah jadwal
-    get '/schedules/new' do
-      erb :new_schedule
+      respond_with(@schedules)
     end
 
     # Tambah jadwal
@@ -283,27 +203,16 @@ module DoctorService
         max_patients: params[:max_patients]
       )
       if schedule.save
-        redirect '/schedules'
+        respond_with({ message: 'Jadwal berhasil ditambahkan', schedule: schedule })
       else
-        halt 400, erb(:error, locals: { message: "Gagal menambahkan jadwal: #{schedule.errors.full_messages.join(', ')}" })
+        halt 400, respond_with({ message: "Gagal menambahkan jadwal: #{schedule.errors.full_messages.join(', ')}" })
       end
-    end
-
-    # Form edit jadwal
-    get '/schedules/:id/edit' do
-      @schedule = Schedule[params[:id]]
-      halt 404, erb(:error, locals: { message: "Jadwal tidak ditemukan." }) unless @schedule
-
-      @doctors = Doctor.all
-      @rooms = Room.all
-      @timeslots = Timeslot.all
-      erb :edit_schedule
     end
 
     # Edit jadwal
     put '/schedules/:id' do
       schedule = Schedule[params[:id]]
-      halt 404, erb(:error, locals: { message: "Jadwal tidak ditemukan." }) unless schedule
+      halt 404, respond_with({ message: "Jadwal tidak ditemukan." }) unless schedule
 
       if schedule.update(
         doctor_id: params[:doctor_id],
@@ -312,27 +221,27 @@ module DoctorService
         date: params[:date],
         max_patients: params[:max_patients]
       )
-        redirect '/schedules'
+        respond_with({ message: 'Jadwal berhasil diperbarui', schedule: schedule })
       else
-        halt 400, erb(:error, locals: { message: "Gagal mengupdate jadwal: #{schedule.errors.full_messages.join(', ')}" })
+        halt 400, respond_with({ message: "Gagal mengupdate jadwal: #{schedule.errors.full_messages.join(', ')}" })
       end
     end
 
     # Hapus jadwal
     delete '/schedules/:id' do
       schedule = Schedule[params[:id]]
-      halt 404, erb(:error, locals: { message: "Jadwal tidak ditemukan." }) unless schedule
+      halt 404, respond_with({ message: "Jadwal tidak ditemukan." }) unless schedule
 
       if schedule.destroy
-        redirect '/schedules'
+        respond_with({ message: 'Jadwal berhasil dihapus' })
       else
-        halt 500, erb(:error, locals: { message: "Gagal menghapus jadwal." })
+        halt 500, respond_with({ message: "Gagal menghapus jadwal." })
       end
     end
 
     # Error Handling
     error do
-      erb :error, locals: { message: env['sinatra.error'].message }
+      respond_with({ message: env['sinatra.error'].message })
     end
   end
 end
