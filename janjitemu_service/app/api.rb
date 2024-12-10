@@ -71,7 +71,7 @@ module JanjiTemu
       end
 
       def fetch_doctors
-        uri = URI("#{http://localhost:9091/doctors}/doctors")
+        uri = URI("#{http://localhost:7861/doctors}/doctors")
       
         begin
           response = Net::HTTP.get(uri)
