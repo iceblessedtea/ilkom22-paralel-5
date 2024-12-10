@@ -1,65 +1,37 @@
 require 'sinatra'
-require 'sequel'
-require 'sqlite3'
 require 'json'
 require 'time'
-require 'net/http'
-
-MEDICAL_RECORD_URL = ENV['MEDICAL_RECORD_URL'] || "http://127.0.0.1:7863"
 
 module PatientService
   class API < Sinatra::Base
-    # Inisialisasi database
-    DB = Sequel.sqlite("./db/patients.db")
+    # Data pasien dummy
+    PATIENTS = [
+      { id: 1, name: "John Doe", age: 30, created_at: Time.now, updated_at: Time.now },
+      { id: 2, name: "Jane Doe", age: 25, created_at: Time.now, updated_at: Time.now }
+    ]
 
-    # Endpoint untuk mengecek status service
     get "/" do
-      uri_medical_record = URI(MEDICAL_RECORD_URL)
-
-      begin
-        # Ambil data dari service MedicalRecord
-        response = Net::HTTP.get_response(uri_medical_record)
-
-        if response.is_a?(Net::HTTPSuccess)
-          medical_record_response = JSON.parse(response.body)
-
-          content_type :json
-          {
-            message: "Service pasien berjalan dengan baik",
-            medical_record_service_response: medical_record_response
-          }.to_json
-        else
-          status 500
-          { error: "Service medical record tidak merespon dengan baik. Status: #{response.code}" }.to_json
-        end
-      rescue SocketError => e
-        status 500
-        { error: "Gagal terhubung ke service medical record: #{e.message}" }.to_json
-      rescue JSON::ParserError => e
-        status 500
-        { error: "Respon dari service medical record tidak valid: #{e.message}" }.to_json
-      end
+      content_type :json
+      { message: "Service pasien berjalan dengan baik", patients: PATIENTS }.to_json
     end
 
-    # Endpoint untuk membuat data pasien baru
     post '/patients' do
       begin
-        # Parsing data pasien dari request
         patient_data = JSON.parse(request.body.read)
-        patient_data['created_at'] = Time.now
-        patient_data['updated_at'] = Time.now
+        id = PATIENTS.size + 1
 
-        # Simpan data ke database
-        res = DB[:patients].insert(patient_data)
-        id = DB[:patients].max(:id)
+        new_patient = {
+          id: id,
+          name: patient_data["name"],
+          age: patient_data["age"],
+          created_at: Time.now,
+          updated_at: Time.now
+        }
 
-        if res
-          status 201
-          JSON.generate('success' => true, 'patient_id' => id)
-        else
-          status 500
-          JSON.generate('success' => false, 'error' => 'Gagal menyimpan data pasien')
-        end
+        PATIENTS << new_patient
+
+        status 201
+        { success: true, patient_id: id }.to_json
       rescue JSON::ParserError => e
         status 400
         { error: "Invalid JSON payload: #{e.message}" }.to_json
@@ -69,24 +41,15 @@ module PatientService
       end
     end
 
-    # Endpoint untuk mengambil data pasien berdasarkan ID
     get '/patients/:id' do
-      id = params['id']
+      patient = PATIENTS.find { |p| p[:id] == params['id'].to_i }
 
-      # Ambil data pasien dari database
-      patient = DB[:patients].where(id: id).first
       if patient
         content_type :json
-        {
-          id: patient[:id],
-          name: patient[:name],
-          age: patient[:age],
-          created_at: patient[:created_at],
-          updated_at: patient[:updated_at]
-        }.to_json
+        patient.to_json
       else
         status 404
-        { error: "Patient dengan ID #{id} tidak ditemukan" }.to_json
+        { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
       end
     end
   end
