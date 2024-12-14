@@ -14,15 +14,13 @@
       get '/' do
         begin
           patient_response = HTTPX.get("#{PATIENT_URL}/")
-          doctor_response = HTTPX.get("#{DOCTOR_URL}/")
-          rm_response = HTTPX.get("#{RM_URL}/")
+          doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors")
 
           content_type :json
           {
             message: "Service janjitemu berjalan dengan baik",
             patient_service_response: JSON.parse(patient_response.body.to_s),
             doctor_service_response: JSON.parse(doctor_response.body.to_s)
-            rm_service_response: JSON.parse(rm_response.body.to_s)
           }.to_json
         rescue => e
           status 500
@@ -57,6 +55,40 @@
         end
       end
 
+      get '/appointments' do
+        if APPOINTMENTS.empty?
+          status 404
+          { error: "No appointments found" }.to_json
+        else
+          appointments_data = APPOINTMENTS.map do |appointment|
+            # Ambil data pasien dan dokter berdasarkan appointment
+            patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
+            doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
+      
+            if patient_response.status == 200 && doctor_response.status == 200
+              patient_data = JSON.parse(patient_response.body.to_s)
+              doctor_data = JSON.parse(doctor_response.body.to_s)
+      
+              {
+                appointment_id: appointment[:id],
+                patient_id: appointment[:patient_id],
+                patient_name: patient_data["name"],
+                doctor_id: appointment[:doctor_id],
+                doctor_name: doctor_data["name"],  # Sesuaikan dengan nama dokter yang valid
+                date: appointment[:date],
+                created_at: appointment[:created_at]
+              }
+            else
+              nil
+            end
+          end.compact
+      
+          content_type :json
+          appointments_data.to_json
+        end
+      end
+      
+
       get '/appointments/:id' do
         appointment = APPOINTMENTS.find { |a| a[:id] == params['id'].to_i }
 
@@ -64,7 +96,6 @@
           begin
             # Ambil data pasien
             patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
-            doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
             doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
 
             if patient_response.status != 200 || doctor_response.status != 200
@@ -92,13 +123,15 @@
           { error: "Appointment not found" }.to_json
         end
       end
+      
+
 
       get '/appointments/doctor/:doctor_id' do
         doctor_id = params['doctor_id'].to_i
-  
+
         # Filter janji temu berdasarkan doctor_id
         appointments_for_doctor = APPOINTMENTS.select { |appointment| appointment[:doctor_id] == doctor_id }
-  
+
         if appointments_for_doctor.empty?
           status 404
           { error: "No appointments found for doctor ID #{doctor_id}" }.to_json
@@ -123,14 +156,15 @@
               nil
             end
           end.compact
-  
+          
+
           content_type :json
           appointments_for_doctor_data.to_json
         end
       end
-
-
-      get '/appointments/patient/:patient_id' do
+        
+    
+      get '/appointments/patients/:patient_id' do
         patient_id = params['patient_id'].to_i
         
         # Filter janji temu berdasarkan patient_id
