@@ -2,13 +2,11 @@ require 'sinatra'
 require 'json'
 require 'time'
 require 'net/http'
+require 'sequel'
 
 module DoctorService
   class API < Sinatra::Base
-    DOCTORS = [
-      { id: 1, name: "Dr. Smith", specialization: "Cardiology", created_at: Time.now, updated_at: Time.now },
-      { id: 2, name: "Dr. Jane", specialization: "Dermatology", created_at: Time.now, updated_at: Time.now }
-    ]
+    DB = Sequel.connect('sqlite://db/doctors.db')
 
     APPOINTMENT_SERVICE_URL = 'http://127.0.0.1:7862'
 
@@ -20,21 +18,21 @@ module DoctorService
 
     # Get Semua Data Doctors
     get '/doctors' do
+      doctors = DB[:doctors].all
       content_type :json
-      DOCTORS.to_json
+      doctors.to_json
     end
 
     # Get Data Dokter Berdasarkan ID
     get '/doctors/:id' do
-      doctor_id = params['id'].to_i
-      doctor = DOCTORS.find { |d| d[:id] == doctor_id }
+      doctor = DB[:doctors].where(id: params['id'].to_i).first
 
       if doctor
         content_type :json
         doctor.to_json
       else
         status 404
-        { error: "Doctor dengan ID #{doctor_id} tidak ditemukan" }.to_json
+        { error: "Doctor dengan ID #{params['id']} tidak ditemukan" }.to_json
       end
     end
 
@@ -42,17 +40,12 @@ module DoctorService
     post '/doctors' do
       begin
         doctor_data = JSON.parse(request.body.read)
-        id = DOCTORS.size + 1
-
-        new_doctor = {
-          id: id,
+        id = DB[:doctors].insert(
           name: doctor_data["name"],
           specialization: doctor_data["specialization"],
           created_at: Time.now,
           updated_at: Time.now
-        }
-
-        DOCTORS << new_doctor
+        )
 
         status 201
         { success: true, doctor_id: id }.to_json
@@ -68,16 +61,19 @@ module DoctorService
     # Mengedit Data Dokter
     put '/doctors/:id' do
       begin
-        doctor = DOCTORS.find { |d| d[:id] == params['id'].to_i }
+        doctor = DB[:doctors].where(id: params['id'].to_i).first
 
         if doctor
           doctor_data = JSON.parse(request.body.read)
-          doctor[:name] = doctor_data["name"] if doctor_data["name"]
-          doctor[:specialization] = doctor_data["specialization"] if doctor_data["specialization"]
-          doctor[:updated_at] = Time.now
+          DB[:doctors].where(id: params['id'].to_i).update(
+            name: doctor_data["name"] || doctor[:name],
+            specialization: doctor_data["specialization"] || doctor[:specialization],
+            updated_at: Time.now
+          )
 
+          updated_doctor = DB[:doctors].where(id: params['id'].to_i).first
           status 200
-          { success: true, doctor: doctor }.to_json
+          { success: true, doctor: updated_doctor }.to_json
         else
           status 404
           { error: "Doctor dengan ID #{params['id']} tidak ditemukan" }.to_json
@@ -93,7 +89,7 @@ module DoctorService
 
     # Menghapus Data Dokter
     delete '/doctors/:id' do
-      doctor = DOCTORS.find { |d| d[:id] == params['id'].to_i }
+      doctor = DB[:doctors].where(id: params['id'].to_i).first
 
       if doctor
         begin
@@ -105,7 +101,7 @@ module DoctorService
             appointments = JSON.parse(response.body)
 
             if appointments.empty?
-              DOCTORS.delete(doctor)
+              DB[:doctors].where(id: params['id'].to_i).delete
               status 200
               { success: true, message: "Doctor dengan ID #{params['id']} berhasil dihapus" }.to_json
             else
