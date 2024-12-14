@@ -4,6 +4,7 @@
 
   PATIENT_URL = "http://127.0.0.1:7860"
   DOCTOR_URL = "http://127.0.0.1:7861"
+  RM_URL = "http://127.0.0.1:7863"
 
   module AppointmentService
     class API < Sinatra::Base
@@ -14,12 +15,14 @@
         begin
           patient_response = HTTPX.get("#{PATIENT_URL}/")
           doctor_response = HTTPX.get("#{DOCTOR_URL}/")
+          rm_response = HTTPX.get("#{RM_URL}/")
 
           content_type :json
           {
             message: "Service janjitemu berjalan dengan baik",
             patient_service_response: JSON.parse(patient_response.body.to_s),
             doctor_service_response: JSON.parse(doctor_response.body.to_s)
+            rm_service_response: JSON.parse(rm_response.body.to_s)
           }.to_json
         rescue => e
           status 500
@@ -61,6 +64,7 @@
           begin
             # Ambil data pasien
             patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
+            doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
             doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
 
             if patient_response.status != 200 || doctor_response.status != 200
@@ -126,7 +130,7 @@
       end
 
 
-      get '/appointments/patients/:patient_id' do
+      get '/appointments/patient/:patient_id' do
         patient_id = params['patient_id'].to_i
         
         # Filter janji temu berdasarkan patient_id
