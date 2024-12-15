@@ -21,8 +21,8 @@
           content_type :json
           {
             message: "Service janjitemu berjalan dengan baik",
-            patient_service_response: JSON.parse(patient_response.body.to_s),
-            doctor_service_response: JSON.parse(doctor_response.body.to_s)
+            # patient_service_response: JSON.parse(patient_response.body.to_s),
+            # doctor_service_response: JSON.parse(doctor_response.body.to_s)
           }.to_json
         rescue => e
           status 500
@@ -213,9 +213,16 @@
             # Ambil data dokter
             doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
             
+            medical_record_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}/records")
+
             if patient_response.status == 200 && doctor_response.status == 200
               patient_data = JSON.parse(patient_response.body.to_s)
               doctor_data = JSON.parse(doctor_response.body.to_s)
+              medical_record = if medical_record_response.status == 200
+                JSON.parse(medical_record_response.body.to_s)["medical_record"]
+              else
+                { note: "Medical record not available", details: [] } # Placeholder rekam medis
+              end
               patient_name = patient_data["patient"]["name"]
               {
                 appointment_id: appointment[:id],
@@ -224,7 +231,8 @@
                 doctor_id: appointment[:doctor_id],
                 doctor_name: doctor_data["name"],
                 date: appointment[:date],
-                created_at: appointment[:created_at]
+                created_at: appointment[:created_at],
+                medical_record: medical_record
               }
             else
               nil
@@ -234,6 +242,19 @@
           content_type :json
           appointments_for_patient_data.to_json
         end
+      end
+
+      get '/docs' do
+        content_type :json
+        {
+          endpoints: {
+            '/': 'Get service status',
+            '/appointments': 'CRUD operations for appointments',
+            '/appointments/:id': 'Get details of an appointment',
+            '/appointments/doctor/:doctor_id': 'Get appointments for a doctor',
+            '/appointments/patients/:patient_id': 'Get appointments for a patient'
+          }
+        }.to_json
       end
 
     end
