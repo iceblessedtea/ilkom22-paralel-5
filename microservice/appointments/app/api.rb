@@ -14,7 +14,7 @@
       get '/' do
         begin
           patient_response = HTTPX.get("#{PATIENT_URL}/")
-          doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors")
+          doctor_response = HTTPX.get("#{DOCTOR_URL}/")
 
           content_type :json
           {

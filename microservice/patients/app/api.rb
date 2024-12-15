@@ -163,37 +163,7 @@ module PatientService
         { error: "Terjadi kesalahan: #{e.message}" }.to_json
       end
     end
-    # post '/patients' do
-    #   begin
-    #     patient_data = JSON.parse(request.body.read)
-
-    #     # Validasi input
-    #     if patient_data["name"].nil? || patient_data["age"].nil? || patient_data["gender"].nil? || patient_data["address"].nil?
-    #       status 400
-    #       return { error: "Semua field (name, age, gender, address) wajib diisi." }.to_json
-    #     end
-
-    #     # Masukkan data pasien ke database
-    #     new_patient_id = DB[:patients].insert(
-    #       name: patient_data["name"],
-    #       age: patient_data["age"].to_i,
-    #       gender: patient_data["gender"],
-    #       address: patient_data["address"],
-    #       created_at: Time.now,
-    #       updated_at: Time.now
-    #     )
-
-    #     status 201
-    #     { success: true, patient_id: new_patient_id }.to_json
-    #   rescue JSON::ParserError => e
-    #     status 400
-    #     { error: "Invalid JSON payload: #{e.message}" }.to_json
-    #   rescue StandardError => e
-    #     status 500
-    #     { error: "Terjadi kesalahan: #{e.message}" }.to_json
-    #   end
-    # end
-
+    
     # Mendapatkan data pasien berdasarkan ID
     get '/patients/:id' do
       patient = DB[:patients].where(id: params['id'].to_i).first
