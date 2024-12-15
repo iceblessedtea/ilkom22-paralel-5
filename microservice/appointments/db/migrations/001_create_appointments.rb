@@ -6,11 +6,8 @@ Sequel.migration do
       Integer :doctor_id, null: false
       DateTime :date, null: false
       String :notes
-      DateTime :created_at, null: false
-      DateTime :updated_at, null: false
-
-      foreign_key [:patient_id], :patients, key: :id, on_delete: :cascade
-      foreign_key [:doctor_id], :doctors, key: :id, on_delete: :cascade
+      DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
+      DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
     end
   end
 end

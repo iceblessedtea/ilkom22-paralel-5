@@ -1,6 +1,7 @@
   require 'sinatra'
   require 'json'
   require 'httpx'
+  require 'sequel'
 
   PATIENT_URL = "http://127.0.0.1:7860"
   DOCTOR_URL = "http://127.0.0.1:7861"
@@ -8,13 +9,14 @@
 
   module AppointmentService
     class API < Sinatra::Base
-      # Data appointment dummy
-      APPOINTMENTS = []
+      DB = Sequel.connect('sqlite://db/new_appointments.db')
+      # # Data appointment dummy
+      # APPOINTMENTS = []
 
       get '/' do
         begin
-          patient_response = HTTPX.get("#{PATIENT_URL}/")
-          doctor_response = HTTPX.get("#{DOCTOR_URL}/")
+          patient_response = HTTPX.get("#{PATIENT_URL}/patients")
+          doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors")
 
           content_type :json
           {
@@ -31,21 +33,21 @@
       post '/appointments' do
         begin
           appointment_data = JSON.parse(request.body.read)
-          id = APPOINTMENTS.size + 1
+          puts "Received appointment data: #{appointment_data}"
+          # id = APPOINTMENTS.size + 1
 
-          new_appointment = {
-            id: id,
+          new_appointment = DB[:appointments].insert(
             patient_id: appointment_data["patient_id"],
             doctor_id: appointment_data["doctor_id"],
             date: appointment_data["date"],
+            notes: appointment_data["notes"],
             created_at: Time.now,
             updated_at: Time.now
-          }
-
-          APPOINTMENTS << new_appointment
+          )
+          
 
           status 201
-          { success: true, appointment_id: id }.to_json
+          { success: true, appointment_id: new_appointment }.to_json
         rescue JSON::ParserError => e
           status 400
           { error: "Invalid JSON payload: #{e.message}" }.to_json
@@ -55,49 +57,69 @@
         end
       end
 
-      get '/appointments' do
-        if APPOINTMENTS.empty?
-          status 404
-          { error: "No appointments found" }.to_json
+      put '/appointments/:id' do
+        appointment_data = JSON.parse(request.body.read)
+        updated = DB[:appointments].where(id: params['id']).update(
+            notes: appointment_data["notes"],
+            updated_at: Time.now
+        )
+        
+        if updated > 0
+            status 200
+            { success: true }.to_json
         else
-          appointments_data = APPOINTMENTS.map do |appointment|
-            # Ambil data pasien dan dokter berdasarkan appointment
-            patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
-            doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
-      
-            if patient_response.status == 200 && doctor_response.status == 200
-              patient_data = JSON.parse(patient_response.body.to_s)
-              doctor_data = JSON.parse(doctor_response.body.to_s)
-      
-              {
-                appointment_id: appointment[:id],
-                patient_id: appointment[:patient_id],
-                patient_name: patient_data["name"],
-                doctor_id: appointment[:doctor_id],
-                doctor_name: doctor_data["name"],  # Sesuaikan dengan nama dokter yang valid
-                date: appointment[:date],
-                created_at: appointment[:created_at]
-              }
-            else
-              nil
-            end
-          end.compact
-      
-          content_type :json
-          appointments_data.to_json
+            status 404
+            { error: "Appointment not found" }.to_json
         end
       end
+
+
+
+      get '/appointments' do
+        appointments = DB[:appointments].all
+        if appointments.empty?
+            status 404
+            { error: "No appointments found" }.to_json
+        else
+            appointments_data = appointments.map do |appointment|
+                patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
+                doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
+                
+                unless patient_response.status == 200 && doctor_response.status == 200
+                    puts "Error fetching data: Patient response status #{patient_response.status}, Doctor response status #{doctor_response.status}"
+                    next # Skip this appointment if there's an error
+                end
+                
+                patient_data = JSON.parse(patient_response.body.to_s)
+                doctor_data = JSON.parse(doctor_response.body.to_s)
+                patient_name = patient_data["patient"]["name"]
+
+                {
+                    appointment_id: appointment[:id],
+                    patient_id: appointment[:patient_id],
+                    patient_name: patient_name,
+                    doctor_id: appointment[:doctor_id],
+                    doctor_name: doctor_data["name"],
+                    date: appointment[:date],
+                    notes: appointment[:notes],
+                    created_at: appointment[:created_at]
+                }
+            end.compact
+            
+            content_type :json
+            appointments_data.to_json
+        end
+    end
       
 
       get '/appointments/:id' do
-        appointment = APPOINTMENTS.find { |a| a[:id] == params['id'].to_i }
-
+        appointment = DB[:appointments].where(id: params['id']).first
         if appointment
           begin
             # Ambil data pasien
             patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
             doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
-
+            
             if patient_response.status != 200 || doctor_response.status != 200
               status 500
               return { error: "Failed to fetch related data" }.to_json
@@ -124,13 +146,23 @@
         end
       end
       
+      delete '/appointments/:id' do
+        deleted = DB[:appointments].where(id: params['id']).delete
+        
+        if deleted > 0
+            status 204 # No Content response for successful deletion.
+        else
+            status 404
+            { error: "Appointment not found" }.to_json
+        end
+    end
 
 
       get '/appointments/doctor/:doctor_id' do
         doctor_id = params['doctor_id'].to_i
 
         # Filter janji temu berdasarkan doctor_id
-        appointments_for_doctor = APPOINTMENTS.select { |appointment| appointment[:doctor_id] == doctor_id }
+        appointments_for_doctor = DB[:appointments].where(doctor_id: doctor_id).all
 
         if appointments_for_doctor.empty?
           status 404
@@ -143,10 +175,11 @@
             if patient_response.status == 200 && doctor_response.status == 200
               patient_data = JSON.parse(patient_response.body.to_s)
               doctor_data = JSON.parse(doctor_response.body.to_s)
+              patient_name = patient_data["patient"]["name"]
               {
                 appointment_id: appointment[:id],
                 patient_id: appointment[:patient_id],
-                patient_name: patient_data["name"],
+                patient_name: patient_name,
                 doctor_id: appointment[:doctor_id],
                 doctor_name: doctor_data["name"],  # Mengambil nama dokter dari data dokter
                 date: appointment[:date],
@@ -168,7 +201,7 @@
         patient_id = params['patient_id'].to_i
         
         # Filter janji temu berdasarkan patient_id
-        appointments_for_patient = APPOINTMENTS.select { |appointment| appointment[:patient_id] == patient_id }
+        appointments_for_patient = DB[:appointments].where(patient_id: patient_id).all
       
         if appointments_for_patient.empty?
           status 404
@@ -179,15 +212,15 @@
             patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
             # Ambil data dokter
             doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
-      
+            
             if patient_response.status == 200 && doctor_response.status == 200
               patient_data = JSON.parse(patient_response.body.to_s)
               doctor_data = JSON.parse(doctor_response.body.to_s)
-              
+              patient_name = patient_data["patient"]["name"]
               {
                 appointment_id: appointment[:id],
                 patient_id: appointment[:patient_id],
-                patient_name: patient_data["name"],
+                patient_name: patient_name,
                 doctor_id: appointment[:doctor_id],
                 doctor_name: doctor_data["name"],
                 date: appointment[:date],
