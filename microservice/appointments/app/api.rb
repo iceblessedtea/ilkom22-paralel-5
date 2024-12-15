@@ -5,7 +5,7 @@
 
   PATIENT_URL = "http://127.0.0.1:7860"
   DOCTOR_URL = "http://127.0.0.1:7861"
-  RM_URL = "http://127.0.0.1:7863"
+  # RM_URL = "http://127.0.0.1:7863"
 
   module AppointmentService
     class API < Sinatra::Base
