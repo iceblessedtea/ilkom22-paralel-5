@@ -10,8 +10,7 @@
   module AppointmentService
     class API < Sinatra::Base
       DB = Sequel.connect('sqlite://db/new_appointments.db')
-      # # Data appointment dummy
-      # APPOINTMENTS = []
+
 
       get '/' do
         begin
@@ -21,8 +20,6 @@
           content_type :json
           {
             message: "Service janjitemu berjalan dengan baik",
-            # patient_service_response: JSON.parse(patient_response.body.to_s),
-            # doctor_service_response: JSON.parse(doctor_response.body.to_s)
           }.to_json
         rescue => e
           status 500
@@ -34,7 +31,7 @@
         begin
           appointment_data = JSON.parse(request.body.read)
           puts "Received appointment data: #{appointment_data}"
-          # id = APPOINTMENTS.size + 1
+
 
           new_appointment = DB[:appointments].insert(
             patient_id: appointment_data["patient_id"],
@@ -72,24 +69,34 @@
             { error: "Appointment not found" }.to_json
         end
       end
-
-
-
+      
+      delete '/appointments/:id' do
+        deleted = DB[:appointments].where(id: params['id']).delete
+        
+        if deleted > 0
+            status 204 # No Content response for successful deletion.
+        else
+            status 404
+            { error: "Appointment not found" }.to_json
+        end
+      end
+      
+      
       get '/appointments' do
         appointments = DB[:appointments].all
         if appointments.empty?
-            status 404
+          status 404
             { error: "No appointments found" }.to_json
-        else
+          else
             appointments_data = appointments.map do |appointment|
-                patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
-                doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
+              patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
+              doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
                 
-                unless patient_response.status == 200 && doctor_response.status == 200
+              unless patient_response.status == 200 && doctor_response.status == 200
                     puts "Error fetching data: Patient response status #{patient_response.status}, Doctor response status #{doctor_response.status}"
                     next # Skip this appointment if there's an error
-                end
-                
+                  end
+                  
                 patient_data = JSON.parse(patient_response.body.to_s)
                 doctor_data = JSON.parse(doctor_response.body.to_s)
                 patient_name = patient_data["patient"]["name"]
@@ -103,15 +110,15 @@
                     date: appointment[:date],
                     notes: appointment[:notes],
                     created_at: appointment[:created_at]
-                }
-            end.compact
+                  }
+                end.compact
             
             content_type :json
             appointments_data.to_json
+          end
         end
-    end
       
-
+        
       get '/appointments/:id' do
         appointment = DB[:appointments].where(id: params['id']).first
         if appointment
@@ -146,17 +153,6 @@
         end
       end
       
-      delete '/appointments/:id' do
-        deleted = DB[:appointments].where(id: params['id']).delete
-        
-        if deleted > 0
-            status 204 # No Content response for successful deletion.
-        else
-            status 404
-            { error: "Appointment not found" }.to_json
-        end
-    end
-
 
       get '/appointments/doctor/:doctor_id' do
         doctor_id = params['doctor_id'].to_i
