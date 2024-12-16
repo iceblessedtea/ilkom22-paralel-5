@@ -8,7 +8,7 @@ module DoctorService
   class API < Sinatra::Base
     DB = Sequel.connect('sqlite://db/doctors.db')
 
-    APPOINTMENT_SERVICE_URL = 'http://127.0.0.1:7862'
+    APPOINTMENT_SERVICE_URL = 'http://appointments:7862'
 
     # Route Home
     get '/' do

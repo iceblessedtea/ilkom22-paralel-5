@@ -10,8 +10,8 @@ require 'puma'
 set :environment, :production
 set :server, :puma
 
-PATIENT_URL = "http://127.0.0.1:7860"
-DOCTOR_URL = "http://127.0.0.1:7861"
+PATIENT_URL = "http://patients:7860"
+DOCTOR_URL = "http://doctors:7861"
 
 module AppointmentService
   class API < Sinatra::Base

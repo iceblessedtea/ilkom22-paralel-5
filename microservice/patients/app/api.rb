@@ -9,8 +9,8 @@ require 'httpx'
 module PatientService
   class API < Sinatra::Base
     DB = Sequel.connect('sqlite://db/patients.db')
-    REKAM_MEDIK_SERVICE_URL = "http://localhost:7863" # URL Service Rekam Medik
-    DOCTOR_SERVICE_URL = "http://localhost:7861"
+    REKAM_MEDIK_SERVICE_URL = "http://medical_records:7863" # URL Service Rekam Medik
+    DOCTOR_SERVICE_URL = "http://doctors:7861"
 
     # Endpoint root untuk memastikan service berjalan
     get "/" do
