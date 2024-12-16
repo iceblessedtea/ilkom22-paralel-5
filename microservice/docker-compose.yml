@@ -9,10 +9,10 @@ services:
     depends_on:
       - appointments
 
-  # medical_records:
-  #   build: ./medical_records
-  #   ports:
-  #     - "7863:7863"
+  medical_records:
+    build: ./medical_records
+    ports:
+      - "7863:7863"
 
   patients:
     build: ./patients
