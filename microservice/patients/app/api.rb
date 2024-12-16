@@ -25,6 +25,59 @@ module PatientService
       { success: true, patients: patients }.to_json
     end
     # mengambil data jadwal dokter
+    # get "/doc-schedules" do
+    #   begin
+    #     # Fetch schedules, doctors, timeslots, and rooms data from respective endpoints
+    #     schedules_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/schedules")
+    #     doctors_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/doctors")
+    #     timeslots_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/timeslots")
+    #     rooms_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/rooms")
+      
+    #     # Check if all responses are successful
+    #     if schedules_response.status == 200 && 
+    #        doctors_response.status == 200 &&
+    #        timeslots_response.status == 200 &&
+    #        rooms_response.status == 200
+      
+    #       # Parse the JSON responses
+    #       schedules = JSON.parse(schedules_response.body.to_s)
+    #       doctors = JSON.parse(doctors_response.body.to_s)
+    #       timeslots = JSON.parse(timeslots_response.body.to_s)
+    #       rooms = JSON.parse(rooms_response.body.to_s)
+      
+    #       # Combine schedules with corresponding doctor, timeslot, and room information
+    #       doc_schedules = schedules.map do |schedule|
+    #         doctor = doctors.find { |doc| doc["id"] == schedule["doctor_id"] }
+    #         timeslot = timeslots.find { |ts| ts["id"] == schedule["timeslot_id"] }
+    #         room = rooms.find { |r| r["id"] == schedule["room_id"] }
+      
+    #         {
+    #           # schedule_id: schedule["id"],
+    #           # doctor_id: schedule["doctor_id"],
+    #           doctor_name: doctor ? doctor["name"] : "Unknown Doctor",
+    #           # room_id: schedule["room_id"],
+    #           room_name: room ? room["name"] : "Unknown Room",
+    #           # timeslot_id: schedule["timeslot_id"],
+    #           timeslot_day: timeslot ? timeslot["day"] : "Unknown Day",
+    #           timeslot_start_time: timeslot ? timeslot["start_time"] : "Unknown Start Time",
+    #           timeslot_end_time: timeslot ? timeslot["end_time"] : "Unknown End Time"
+    #           # date: schedule["date"]
+    #         }
+    #       end
+      
+    #       # Return the combined data as JSON
+    #       content_type :json
+    #       doc_schedules.to_json
+    #     else
+    #       status 500
+    #       { error: "Failed to fetch schedules, doctors, timeslots, or rooms data" }.to_json
+    #     end
+    #   rescue => e
+    #     status 500
+    #     { error: "An error occurred: #{e.message}" }.to_json
+    #   end
+    # end
+
     get "/doc-schedules" do
       begin
         # Fetch schedules, doctors, timeslots, and rooms data from respective endpoints
@@ -32,52 +85,58 @@ module PatientService
         doctors_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/doctors")
         timeslots_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/timeslots")
         rooms_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/rooms")
-      
-        # Check if all responses are successful
-        if schedules_response.status == 200 && 
-           doctors_response.status == 200 &&
-           timeslots_response.status == 200 &&
-           rooms_response.status == 200
-      
-          # Parse the JSON responses
+    
+        # Validate HTTPX responses
+        def valid_response?(response)
+          response.is_a?(HTTPX::Response) && response.status == 200
+        end
+    
+        unless valid_response?(schedules_response) &&
+               valid_response?(doctors_response) &&
+               valid_response?(timeslots_response) &&
+               valid_response?(rooms_response)
+          status 500
+          return { error: "Failed to fetch schedules, doctors, timeslots, or rooms data" }.to_json
+        end
+    
+        # Parse JSON data with error handling
+        begin
           schedules = JSON.parse(schedules_response.body.to_s)
           doctors = JSON.parse(doctors_response.body.to_s)
           timeslots = JSON.parse(timeslots_response.body.to_s)
           rooms = JSON.parse(rooms_response.body.to_s)
-      
-          # Combine schedules with corresponding doctor, timeslot, and room information
-          doc_schedules = schedules.map do |schedule|
-            doctor = doctors.find { |doc| doc["id"] == schedule["doctor_id"] }
-            timeslot = timeslots.find { |ts| ts["id"] == schedule["timeslot_id"] }
-            room = rooms.find { |r| r["id"] == schedule["room_id"] }
-      
-            {
-              # schedule_id: schedule["id"],
-              # doctor_id: schedule["doctor_id"],
-              doctor_name: doctor ? doctor["name"] : "Unknown Doctor",
-              # room_id: schedule["room_id"],
-              room_name: room ? room["name"] : "Unknown Room",
-              # timeslot_id: schedule["timeslot_id"],
-              timeslot_day: timeslot ? timeslot["day"] : "Unknown Day",
-              timeslot_start_time: timeslot ? timeslot["start_time"] : "Unknown Start Time",
-              timeslot_end_time: timeslot ? timeslot["end_time"] : "Unknown End Time"
-              # date: schedule["date"]
-            }
-          end
-      
-          # Return the combined data as JSON
-          content_type :json
-          doc_schedules.to_json
-        else
+        rescue JSON::ParserError => e
           status 500
-          { error: "Failed to fetch schedules, doctors, timeslots, or rooms data" }.to_json
+          return { error: "Failed to parse response: #{e.message}" }.to_json
         end
+    
+        # Combine schedules with corresponding doctor, timeslot, and room information
+        doc_schedules = schedules.map do |schedule|
+          doctor = doctors.find { |doc| doc["id"] == schedule["doctor_id"] }
+          timeslot = timeslots.find { |ts| ts["id"] == schedule["timeslot_id"] }
+          room = rooms.find { |r| r["id"] == schedule["room_id"] }
+    
+          {
+            doctor_name: doctor ? doctor["name"] : "Unknown Doctor",
+            room_name: room ? room["name"] : "Unknown Room",
+            timeslot_day: timeslot ? timeslot["day"] : "Unknown Day",
+            timeslot_start_time: timeslot ? timeslot["start_time"] : "Unknown Start Time",
+            timeslot_end_time: timeslot ? timeslot["end_time"] : "Unknown End Time"
+          }
+        end
+    
+        # Return the combined data as JSON
+        content_type :json
+        doc_schedules.to_json
+    
       rescue => e
+        puts "Error: #{e.full_message}" # Debug log
         status 500
         { error: "An error occurred: #{e.message}" }.to_json
       end
     end
-   
+    
+   #
     post '/patients' do
       begin
         patients_data = JSON.parse(request.body.read)
@@ -164,6 +223,7 @@ module PatientService
         status 404
         { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
       end
+
       put '/patients/:id' do
         begin
           patient_data = JSON.parse(request.body.read)
