@@ -34,87 +34,24 @@ module AppointmentService
     # Root endpoint to check service health
     get '/' do
       begin
-        # Parallel API calls using Concurrent::Future
-        patient_future = Concurrent::Future.execute(executor: API_THREAD_POOL) do
-          HTTPX.get("#{PATIENT_URL}/patients")
+        # Ambil data dari service lain
+        patient_response = HTTPX.get("#{PATIENT_URL}/patients")
+        doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors")
+      
+        # Cek apakah respons valid
+        if patient_response.status == 200 && doctor_response.status == 200
+          status 200
+          { success: true, message: "Server berjalan dengan baik." }.to_json
+        else
+          status 500
+          { error: "Gagal mengambil data dari service lain." }.to_json
         end
-    
-        doctor_future = Concurrent::Future.execute(executor: API_THREAD_POOL) do
-          HTTPX.get("#{DOCTOR_URL}/doctors")
-        end
-    
-        doctor_schedule_future = Concurrent::Future.execute(executor: API_THREAD_POOL) do
-          HTTPX.get("#{DOCTOR_URL}/schedules")
-        end
-    
-        timeslot_future = Concurrent::Future.execute(executor: API_THREAD_POOL) do
-          HTTPX.get("#{DOCTOR_URL}/timeslots")
-        end
-    
-        room_future = Concurrent::Future.execute(executor: API_THREAD_POOL) do
-          HTTPX.get("#{DOCTOR_URL}/rooms")
-        end
-    
-        # Wait for all futures to complete
-        responses = {
-          patients: patient_future.value,
-          doctors: doctor_future.value,
-          schedules: doctor_schedule_future.value,
-          timeslots: timeslot_future.value,
-          rooms: room_future.value
-        }
-    
-        # Parse responses and validate
-        parsed_data = responses.transform_values do |response|
-          response.status == 200 ? JSON.parse(response.body.to_s) : nil
-        end
-    
-        parsed_data.each do |key, data|
-          unless data
-            LOGGER.error("Failed to retrieve #{key} data")
-            status 500
-            return { error: "Gagal mengambil data #{key} dari service." }.to_json
-          end
-        end
-    
-        # Process data in a thread-safe manner
-        doctors = parsed_data[:doctors]
-        schedules = parsed_data[:schedules]
-        timeslots = parsed_data[:timeslots]
-        rooms = parsed_data[:rooms]
-    
-        data = doctors.map do |doctor|
-          doctor_schedules = schedules.select { |s| s["doctor_id"] == doctor["id"] }
-          
-          {
-            doctor_id: doctor["id"],
-            name: doctor["name"],
-            specialization: doctor["specialization"],
-            schedules: doctor_schedules.map do |s|
-              timeslot = timeslots.find { |t| t["id"] == s["timeslot_id"] }
-              room = rooms.find { |r| r["id"] == s["room_id"] }
-    
-              {
-                date: s["date"],
-                room_name: room ? room["name"] : "Unknown Room",
-                timeslot: timeslot ? {
-                  day: timeslot["day"],
-                  start_time: timeslot["start_time"],
-                  end_time: timeslot["end_time"]
-                } : "Unknown Timeslot"
-              }
-            end
-          }
-        end
-    
-        content_type :json
-        { message: "Service janjitemu berjalan dengan baik", data: data }.to_json
       rescue => e
-        LOGGER.error("Error in root endpoint: #{e.message}")
         status 500
-        { error: "Gagal berkomunikasi dengan service lain: #{e.message}" }.to_json
-      end
+        { error: "Terjadi kesalahan: #{e.message}" }.to_json
+      end        
     end
+
     
 
     # Create a new appointment
