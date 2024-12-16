@@ -25,7 +25,7 @@ module PatientService
       { success: true, patients: patients }.to_json
     end
     # mengambil data jadwal dokter
-    get "/schedules" do
+    get "/doc-schedules" do
       begin
         # Fetch schedules, doctors, timeslots, and rooms data from respective endpoints
         schedules_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/schedules")
