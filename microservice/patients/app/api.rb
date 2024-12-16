@@ -212,16 +212,16 @@ module PatientService
       put '/patients/:id' do
         begin
           patient_data = JSON.parse(request.body.read)
-  
+      
           # Validasi apakah data pasien yang diterima lengkap
           if patient_data["name"].nil? || patient_data["age"].nil? || patient_data["gender"].nil? || patient_data["address"].nil?
             status 400
             return { error: "Semua field (name, age, gender, address) wajib diisi." }.to_json
           end
-  
+      
           # Cari pasien berdasarkan ID
           patient = DB[:patients].where(id: params['id'].to_i).first
-  
+      
           if patient
             # Perbarui data pasien
             DB[:patients].where(id: params['id'].to_i).update(
@@ -231,7 +231,6 @@ module PatientService
               address: patient_data["address"],
               updated_at: Time.now
             )
-  
             # Kembalikan response sukses
             content_type :json
             { success: true, message: "Data pasien berhasil diperbarui." }.to_json
@@ -247,6 +246,7 @@ module PatientService
           status 500
           { error: "Terjadi kesalahan: #{e.message}" }.to_json
         end
+      end
     end
   end
 end
