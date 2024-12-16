@@ -248,30 +248,54 @@ module AppointmentService
     # Get appointments by doctor ID
     get '/appointments/doctor/:doctor_id' do
       doctor_id = params['doctor_id'].to_i
+    
+      # Ambil janji temu untuk doctor_id
       appointments_for_doctor = DB[:appointments].where(doctor_id: doctor_id).all
+    
       if appointments_for_doctor.empty?
         status 404
+        content_type :json
         { error: "No appointments found for doctor ID #{doctor_id}" }.to_json
       else
+        # Ambil data dokter dari service dokter
+        doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{doctor_id}")
+        if doctor_response.status == 200
+          doctor_data = JSON.parse(doctor_response.body.to_s)
+        else
+          status 500
+          content_type :json
+          return { error: "Failed to fetch doctor data for doctor ID #{doctor_id}" }.to_json
+        end
+    
+        # Proses janji temu
         appointments_data = appointments_for_doctor.map do |appointment|
+          # Ambil data pasien dari service pasien
           patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
           if patient_response.status == 200
             patient_data = JSON.parse(patient_response.body.to_s)
             {
               appointment_id: appointment[:id],
-              patient_id: appointment[:patient_id],
               patient_name: patient_data["patient"]["name"],
-              doctor_id: appointment[:doctor_id],
+              doctor: doctor_data,
               date: appointment[:date]
             }
           else
-            nil
+            # Berikan informasi jika data pasien gagal diambil
+            {
+              appointment_id: appointment[:id],
+              patient: { error: "Failed to fetch patient data for patient ID #{appointment[:patient_id]}" },
+              doctor: doctor_data,
+              date: appointment[:date]
+            }
           end
-        end.compact
+        end
+    
+        status 200
         content_type :json
         appointments_data.to_json
       end
     end
+    
 
     # Get appointments by patient ID
     get '/appointments/patients/:patient_id' do
@@ -283,10 +307,13 @@ module AppointmentService
       else
         appointments_data = appointments_for_patient.map do |appointment|
           doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
-          if doctor_response.status == 200
+          patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
+          if doctor_response.status == 200 && patient_response.status == 200
             doctor_data = JSON.parse(doctor_response.body.to_s)
+            patient_data = JSON.parse(patient_response.body.to_s)
             {
               appointment_id: appointment[:id],
+              patient:patient_data,
               doctor_id: appointment[:doctor_id],
               doctor_name: doctor_data["name"],
               date: appointment[:date],
