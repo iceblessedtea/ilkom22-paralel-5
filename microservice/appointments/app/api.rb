@@ -199,9 +199,38 @@ module AppointmentService
             begin
               patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
               doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
+              doctor_schedule_response = HTTPX.get("#{DOCTOR_URL}/schedules")
+              timeslot_response = HTTPX.get("#{DOCTOR_URL}/timeslots")
+              room_response = HTTPX.get("#{DOCTOR_URL}/rooms")
               if patient_response.status == 200 && doctor_response.status == 200
                 patient_data = JSON.parse(patient_response.body.to_s)
                 doctor_data = JSON.parse(doctor_response.body.to_s)
+                # Parsing data dari respons
+                patient_data = JSON.parse(patient_response.body.to_s)
+                doctor_data = JSON.parse(doctor_response.body.to_s)
+                schedules = JSON.parse(doctor_schedule_response.body.to_s) if doctor_schedule_response.status == 200
+                timeslots = JSON.parse(timeslot_response.body.to_s) if timeslot_response.status == 200
+                rooms = JSON.parse(room_response.body.to_s) if room_response.status == 200
+                
+                # Mencari schedule berdasarkan doctor_id dan appointment date
+                require 'time'
+
+                schedule_data = schedules&.find do |s|
+                  appointment_date = appointment[:date].to_date.to_s  # Mengubah DateTime menjadi Date
+                  schedule_date = s["date"].to_s  # Mengubah Date menjadi String
+                  appointment_date == schedule_date && s["doctor_id"] == appointment[:doctor_id]
+                end
+                
+
+                # schedule_data = schedules&.find { |s| s["doctor_id"] == appointment[:doctor_id]}
+
+                timeslot_data = if schedule_data
+                  timeslots&.find { |t| t["id"] == schedule_data["timeslot_id"] }
+                end
+                # Mengambil data room dari schedule
+                room_data = if schedule_data
+                  rooms&.find { |r| r["id"] == schedule_data["room_id"] }
+                end
                 appointments_data << {
                   appointment_id: appointment[:id],
                   patient_id: appointment[:patient_id],
@@ -209,9 +238,15 @@ module AppointmentService
                   doctor_id: appointment[:doctor_id],
                   doctor_name: doctor_data["name"],
                   date: appointment[:date],
-                  notes: appointment[:notes]
+                  notes: appointment[:notes],
+                  room_name: room_data ? room_data["name"] : "Unknown Room",
+                  timeslot: timeslot_data ? {
+                    day: timeslot_data["day"],
+                    start_time: timeslot_data["start_time"],
+                    end_time: timeslot_data["end_time"]
+                  } : "Unknown Timeslot"
                 }
-              end
+              end.compact
             rescue => e
               LOGGER.error("Error fetching appointment data: #{e.message}")
             ensure
