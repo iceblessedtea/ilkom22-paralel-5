@@ -8,7 +8,8 @@ require 'uri'
 module MedicalRecordService
   class API < Sinatra::Base
     # Inisialisasi database SQLite
-    DB = Sequel.sqlite("C:/Semester 5/ilkom22-paralel-5/microservice/medical_records/db/medical_records_data_baru.db")
+    DB = Sequel.connect("sqlite://db/medical_records_data_baru.db")
+    
     # Endpoint ke service pasien
     PATIENT_SERVICE_URL = "http://localhost:7860" # Sesuaikan dengan alamat service pasien
 
