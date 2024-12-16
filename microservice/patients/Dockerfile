@@ -11,7 +11,7 @@ COPY . /app
 RUN bundle install
 
 # Ekspose port yang digunakan oleh aplikasi
-EXPOSE 7861
+EXPOSE 7860
 
 # Perintah untuk menjalankan service
 CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "--port", "7860"]
