@@ -1,3 +1,202 @@
+# require 'sinatra'
+# require 'json'
+# require 'time'
+# require 'net/http'
+# require 'uri'
+# require 'sequel'
+# require 'httpx'
+
+# module PatientService
+#   class API < Sinatra::Base
+#     DB = Sequel.connect('sqlite://db/patients.db')
+#     REKAM_MEDIK_SERVICE_URL = "http://localhost:7863" # URL Service Rekam Medik
+#     DOCTOR_SERVICE_URL = "http://localhost:7861"
+
+#     # Endpoint root untuk memastikan service berjalan
+#     get "/" do
+#       content_type :json
+#       { message: "Service pasien berjalan dengan baik" }.to_json
+#     end
+
+#     # Mendapatkan semua data pasien
+#     get "/patients" do
+#       patients = DB[:patients].all
+#       content_type :json
+#       { success: true, patients: patients }.to_json
+#     end
+    
+#     get "/schedules" do
+#       begin
+#         # Fetch schedules from DoctorService
+#         uri = URI("#{DOCTOR_SERVICE_URL}/schedules")
+#         response = Net::HTTP.get_response(uri)
+
+#         if response.code == '200'
+#           schedules = JSON.parse(response.body)
+          
+#           # For each schedule, fetch the associated doctor and timeslot
+#           detailed_schedules = schedules.map do |schedule|
+#             # Fetch doctor info
+#             doctor_uri = URI("#{DOCTOR_SERVICE_URL}/doctors/#{schedule['doctor_id']}")
+#             doctor_response = Net::HTTP.get_response(doctor_uri)
+#             doctor = JSON.parse(doctor_response.body) if doctor_response.code == '200'
+
+#             # Fetch timeslot info
+#             timeslot_uri = URI("#{DOCTOR_SERVICE_URL}/timeslots/#{schedule['timeslot_id']}")
+#             timeslot_response = Net::HTTP.get_response(timeslot_uri)
+#             timeslot = JSON.parse(timeslot_response.body) if timeslot_response.code == '200'
+
+#             {
+#               schedule_id: schedule['id'],
+#               doctor_name: doctor ? doctor['name'] : 'Unknown Doctor',
+#               timeslot_day: timeslot ? timeslot['day'] : 'Unknown Day',
+#               timeslot_start_time: timeslot ? timeslot['start_time'] : 'Unknown Start Time',
+#               timeslot_end_time: timeslot ? timeslot['end_time'] : 'Unknown End Time',
+#               date: schedule['date'],
+#               room_id: schedule['room_id']
+#             }
+#           end
+
+#           content_type :json
+#           detailed_schedules.to_json
+#         else
+#           status 500
+#           { error: "Failed to fetch schedules from DoctorService" }.to_json
+#         end
+#       rescue => e
+#         status 500
+#         { error: "An error occurred: #{e.message}" }.to_json
+#       end
+#     end
+#   end
+           
+#     post '/patients' do
+#       begin
+#         patients_data = JSON.parse(request.body.read)
+    
+#         # Validasi apakah data yang dikirimkan adalah array dan tidak kosong
+#         if !patients_data.is_a?(Array) || patients_data.empty?
+#           status 400
+#           return { error: "Data harus dalam bentuk array dan tidak boleh kosong." }.to_json
+#         end
+    
+#         # Loop melalui setiap pasien dan masukkan ke database
+#         patients_data.each do |patient_data|
+#           # Validasi field pasien
+#           if patient_data["name"].nil? || patient_data["age"].nil? || patient_data["gender"].nil? || patient_data["address"].nil?
+#             status 400
+#             return { error: "Semua field (name, age, gender, address) wajib diisi." }.to_json
+#           end
+    
+#           # Masukkan data pasien ke database
+#           DB[:patients].insert(
+#             name: patient_data["name"],
+#             age: patient_data["age"].to_i,
+#             gender: patient_data["gender"],
+#             address: patient_data["address"],
+#             created_at: Time.now,
+#             updated_at: Time.now
+#           )
+#         end
+    
+#         # Jika berhasil menambahkan pasien
+#         status 201
+#         { success: true, message: "Data pasien berhasil ditambahkan." }.to_json
+#       rescue JSON::ParserError => e
+#         status 400
+#         { error: "Invalid JSON payload: #{e.message}" }.to_json
+#       rescue StandardError => e
+#         status 500
+#         { error: "Terjadi kesalahan: #{e.message}" }.to_json
+#       end
+#     end
+    
+#     # Mendapatkan data pasien berdasarkan ID
+#     get '/patients/:id' do
+#       patient = DB[:patients].where(id: params['id'].to_i).first
+
+#       if patient
+#         content_type :json
+#         { success: true, patient: patient }.to_json
+#       else
+#         status 404
+#         { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
+#       end
+#     end
+
+#     # Endpoint untuk melihat pasien dengan rekam medisnya
+#     get '/patients/:id/records' do
+#       patient = DB[:patients].where(id: params['id'].to_i).first
+
+#       if patient
+#         # Fetch rekam medik dari Service Rekam Medik
+#         uri = URI("#{REKAM_MEDIK_SERVICE_URL}/medical_records/#{patient[:id]}")
+#         response = Net::HTTP.get_response(uri)
+
+#         if response.is_a?(Net::HTTPSuccess)
+#           medical_record = JSON.parse(response.body)
+
+#           # Gabungkan data pasien dengan data rekam medik
+#           result = {
+#             id: patient[:id],
+#             name: patient[:name],
+#             age: patient[:age],
+#             gender: patient[:gender],   # Menampilkan gender
+#             address: patient[:address], # Menampilkan address
+#             medical_record: medical_record
+#           }
+
+#           content_type :json
+#           { success: true, data: result }.to_json
+#         else
+#           status response.code.to_i
+#           { error: "Gagal mengambil data rekam medik untuk pasien ID #{patient[:id]}" }.to_json
+#         end
+#       else
+#         status 404
+#         { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
+#       end
+
+#       put '/patients/:id' do
+#         begin
+#           patient_data = JSON.parse(request.body.read)
+      
+#           # Validasi apakah data pasien yang diterima lengkap
+#           if patient_data["name"].nil? || patient_data["age"].nil? || patient_data["gender"].nil? || patient_data["address"].nil?
+#             status 400
+#             return { error: "Semua field (name, age, gender, address) wajib diisi." }.to_json
+#           end
+      
+#           # Cari pasien berdasarkan ID
+#           patient = DB[:patients].where(id: params['id'].to_i).first
+      
+#           if patient
+#             # Perbarui data pasien
+#             DB[:patients].where(id: params['id'].to_i).update(
+#               name: patient_data["name"],
+#               age: patient_data["age"].to_i,
+#               gender: patient_data["gender"],
+#               address: patient_data["address"],
+#               updated_at: Time.now
+#             )
+#             # Kembalikan response sukses
+#             content_type :json
+#             { success: true, message: "Data pasien berhasil diperbarui." }.to_json
+#           else
+#             # Pasien tidak ditemukan
+#             status 404
+#             { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
+#           end
+#         rescue JSON::ParserError => e
+#           status 400
+#           { error: "Invalid JSON payload: #{e.message}" }.to_json
+#         rescue StandardError => e
+#           status 500
+#           { error: "Terjadi kesalahan: #{e.message}" }.to_json
+#         end
+#       end
+#     end
+#   end
 require 'sinatra'
 require 'json'
 require 'time'
@@ -24,138 +223,22 @@ module PatientService
       content_type :json
       { success: true, patients: patients }.to_json
     end
-    # mengambil data jadwal dokter
-    # get "/doc-schedules" do
-    #   begin
-    #     # Fetch schedules, doctors, timeslots, and rooms data from respective endpoints
-    #     schedules_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/schedules")
-    #     doctors_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/doctors")
-    #     timeslots_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/timeslots")
-    #     rooms_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/rooms")
-      
-    #     # Check if all responses are successful
-    #     if schedules_response.status == 200 && 
-    #        doctors_response.status == 200 &&
-    #        timeslots_response.status == 200 &&
-    #        rooms_response.status == 200
-      
-    #       # Parse the JSON responses
-    #       schedules = JSON.parse(schedules_response.body.to_s)
-    #       doctors = JSON.parse(doctors_response.body.to_s)
-    #       timeslots = JSON.parse(timeslots_response.body.to_s)
-    #       rooms = JSON.parse(rooms_response.body.to_s)
-      
-    #       # Combine schedules with corresponding doctor, timeslot, and room information
-    #       doc_schedules = schedules.map do |schedule|
-    #         doctor = doctors.find { |doc| doc["id"] == schedule["doctor_id"] }
-    #         timeslot = timeslots.find { |ts| ts["id"] == schedule["timeslot_id"] }
-    #         room = rooms.find { |r| r["id"] == schedule["room_id"] }
-      
-    #         {
-    #           # schedule_id: schedule["id"],
-    #           # doctor_id: schedule["doctor_id"],
-    #           doctor_name: doctor ? doctor["name"] : "Unknown Doctor",
-    #           # room_id: schedule["room_id"],
-    #           room_name: room ? room["name"] : "Unknown Room",
-    #           # timeslot_id: schedule["timeslot_id"],
-    #           timeslot_day: timeslot ? timeslot["day"] : "Unknown Day",
-    #           timeslot_start_time: timeslot ? timeslot["start_time"] : "Unknown Start Time",
-    #           timeslot_end_time: timeslot ? timeslot["end_time"] : "Unknown End Time"
-    #           # date: schedule["date"]
-    #         }
-    #       end
-      
-    #       # Return the combined data as JSON
-    #       content_type :json
-    #       doc_schedules.to_json
-    #     else
-    #       status 500
-    #       { error: "Failed to fetch schedules, doctors, timeslots, or rooms data" }.to_json
-    #     end
-    #   rescue => e
-    #     status 500
-    #     { error: "An error occurred: #{e.message}" }.to_json
-    #   end
-    # end
 
-    get "/doc-schedules" do
-      begin
-        # Fetch schedules, doctors, timeslots, and rooms data from respective endpoints
-        schedules_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/schedules")
-        doctors_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/doctors")
-        timeslots_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/timeslots")
-        rooms_response = HTTPX.get("#{DOCTOR_SERVICE_URL}/rooms")
-    
-        # Validate HTTPX responses
-        def valid_response?(response)
-          response.is_a?(HTTPX::Response) && response.status == 200
-        end
-    
-        unless valid_response?(schedules_response) &&
-               valid_response?(doctors_response) &&
-               valid_response?(timeslots_response) &&
-               valid_response?(rooms_response)
-          status 500
-          return { error: "Failed to fetch schedules, doctors, timeslots, or rooms data" }.to_json
-        end
-    
-        # Parse JSON data with error handling
-        begin
-          schedules = JSON.parse(schedules_response.body.to_s)
-          doctors = JSON.parse(doctors_response.body.to_s)
-          timeslots = JSON.parse(timeslots_response.body.to_s)
-          rooms = JSON.parse(rooms_response.body.to_s)
-        rescue JSON::ParserError => e
-          status 500
-          return { error: "Failed to parse response: #{e.message}" }.to_json
-        end
-    
-        # Combine schedules with corresponding doctor, timeslot, and room information
-        doc_schedules = schedules.map do |schedule|
-          doctor = doctors.find { |doc| doc["id"] == schedule["doctor_id"] }
-          timeslot = timeslots.find { |ts| ts["id"] == schedule["timeslot_id"] }
-          room = rooms.find { |r| r["id"] == schedule["room_id"] }
-    
-          {
-            doctor_name: doctor ? doctor["name"] : "Unknown Doctor",
-            room_name: room ? room["name"] : "Unknown Room",
-            timeslot_day: timeslot ? timeslot["day"] : "Unknown Day",
-            timeslot_start_time: timeslot ? timeslot["start_time"] : "Unknown Start Time",
-            timeslot_end_time: timeslot ? timeslot["end_time"] : "Unknown End Time"
-          }
-        end
-    
-        # Return the combined data as JSON
-        content_type :json
-        doc_schedules.to_json
-    
-      rescue => e
-        puts "Error: #{e.full_message}" # Debug log
-        status 500
-        { error: "An error occurred: #{e.message}" }.to_json
-      end
-    end
-    
-   #
+    # Menambahkan pasien baru
     post '/patients' do
       begin
         patients_data = JSON.parse(request.body.read)
-    
-        # Validasi apakah data yang dikirimkan adalah array dan tidak kosong
-        if !patients_data.is_a?(Array) || patients_data.empty?
-          status 400
-          return { error: "Data harus dalam bentuk array dan tidak boleh kosong." }.to_json
+
+        unless patients_data.is_a?(Array) && !patients_data.empty?
+          halt 400, { error: "Data harus dalam bentuk array dan tidak boleh kosong." }.to_json
         end
-    
-        # Loop melalui setiap pasien dan masukkan ke database
+
         patients_data.each do |patient_data|
-          # Validasi field pasien
-          if patient_data["name"].nil? || patient_data["age"].nil? || patient_data["gender"].nil? || patient_data["address"].nil?
-            status 400
-            return { error: "Semua field (name, age, gender, address) wajib diisi." }.to_json
+          required_fields = %w[name age gender address]
+          unless required_fields.all? { |field| patient_data.key?(field) }
+            halt 400, { error: "Field #{required_fields.join(', ')} wajib diisi." }.to_json
           end
-    
-          # Masukkan data pasien ke database
+
           DB[:patients].insert(
             name: patient_data["name"],
             age: patient_data["age"].to_i,
@@ -165,19 +248,16 @@ module PatientService
             updated_at: Time.now
           )
         end
-    
-        # Jika berhasil menambahkan pasien
+
         status 201
         { success: true, message: "Data pasien berhasil ditambahkan." }.to_json
       rescue JSON::ParserError => e
-        status 400
-        { error: "Invalid JSON payload: #{e.message}" }.to_json
-      rescue StandardError => e
-        status 500
-        { error: "Terjadi kesalahan: #{e.message}" }.to_json
+        halt 400, { error: "Invalid JSON payload: #{e.message}" }.to_json
+      rescue => e
+        halt 500, { error: "Terjadi kesalahan: #{e.message}" }.to_json
       end
     end
-    
+
     # Mendapatkan data pasien berdasarkan ID
     get '/patients/:id' do
       patient = DB[:patients].where(id: params['id'].to_i).first
@@ -186,82 +266,118 @@ module PatientService
         content_type :json
         { success: true, patient: patient }.to_json
       else
-        status 404
-        { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
+        halt 404, { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
       end
     end
 
-    # Endpoint untuk melihat pasien dengan rekam medisnya
+    # Memperbarui data pasien
+    put '/patients/:id' do
+      begin
+        patient_data = JSON.parse(request.body.read)
+
+        required_fields = %w[name age gender address]
+        unless required_fields.all? { |field| patient_data.key?(field) }
+          halt 400, { error: "Field #{required_fields.join(', ')} wajib diisi." }.to_json
+        end
+
+        patient = DB[:patients].where(id: params['id'].to_i).first
+
+        if patient
+          DB[:patients].where(id: params['id'].to_i).update(
+            name: patient_data["name"],
+            age: patient_data["age"].to_i,
+            gender: patient_data["gender"],
+            address: patient_data["address"],
+            updated_at: Time.now
+          )
+          { success: true, message: "Data pasien berhasil diperbarui." }.to_json
+        else
+          halt 404, { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
+        end
+      rescue JSON::ParserError => e
+        halt 400, { error: "Invalid JSON payload: #{e.message}" }.to_json
+      rescue => e
+        halt 500, { error: "Terjadi kesalahan: #{e.message}" }.to_json
+      end
+    end
+
+    # Mendapatkan data pasien dengan rekam medis
     get '/patients/:id/records' do
       patient = DB[:patients].where(id: params['id'].to_i).first
 
       if patient
-        # Fetch rekam medik dari Service Rekam Medik
-        uri = URI("#{REKAM_MEDIK_SERVICE_URL}/medical_records/#{patient[:id]}")
-        response = Net::HTTP.get_response(uri)
+        begin
+          uri = URI("#{REKAM_MEDIK_SERVICE_URL}/medical_records/#{patient[:id]}")
+          response = Net::HTTP.get_response(uri)
 
-        if response.is_a?(Net::HTTPSuccess)
-          medical_record = JSON.parse(response.body)
-
-          # Gabungkan data pasien dengan data rekam medik
-          result = {
-            id: patient[:id],
-            name: patient[:name],
-            age: patient[:age],
-            gender: patient[:gender],   # Menampilkan gender
-            address: patient[:address], # Menampilkan address
-            medical_record: medical_record
-          }
-
-          content_type :json
-          { success: true, data: result }.to_json
-        else
-          status response.code.to_i
-          { error: "Gagal mengambil data rekam medik untuk pasien ID #{patient[:id]}" }.to_json
+          if response.is_a?(Net::HTTPSuccess)
+            medical_record = JSON.parse(response.body)
+            result = {
+              id: patient[:id],
+              name: patient[:name],
+              age: patient[:age],
+              gender: patient[:gender],
+              address: patient[:address],
+              medical_record: medical_record
+            }
+            content_type :json
+            { success: true, data: result }.to_json
+          else
+            halt response.code.to_i, { error: "Gagal mengambil data rekam medik untuk pasien ID #{patient[:id]}" }.to_json
+          end
+        rescue => e
+          halt 500, { error: "Terjadi kesalahan: #{e.message}" }.to_json
         end
       else
-        status 404
-        { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
-      end
-
-      put '/patients/:id' do
-        begin
-          patient_data = JSON.parse(request.body.read)
-      
-          # Validasi apakah data pasien yang diterima lengkap
-          if patient_data["name"].nil? || patient_data["age"].nil? || patient_data["gender"].nil? || patient_data["address"].nil?
-            status 400
-            return { error: "Semua field (name, age, gender, address) wajib diisi." }.to_json
-          end
-      
-          # Cari pasien berdasarkan ID
-          patient = DB[:patients].where(id: params['id'].to_i).first
-      
-          if patient
-            # Perbarui data pasien
-            DB[:patients].where(id: params['id'].to_i).update(
-              name: patient_data["name"],
-              age: patient_data["age"].to_i,
-              gender: patient_data["gender"],
-              address: patient_data["address"],
-              updated_at: Time.now
-            )
-            # Kembalikan response sukses
-            content_type :json
-            { success: true, message: "Data pasien berhasil diperbarui." }.to_json
-          else
-            # Pasien tidak ditemukan
-            status 404
-            { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
-          end
-        rescue JSON::ParserError => e
-          status 400
-          { error: "Invalid JSON payload: #{e.message}" }.to_json
-        rescue StandardError => e
-          status 500
-          { error: "Terjadi kesalahan: #{e.message}" }.to_json
-        end
+        halt 404, { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
       end
     end
+
+    get "/schedules" do
+      begin
+        # Ambil jadwal dari DoctorService
+        uri = URI("#{DOCTOR_SERVICE_URL}/schedules")
+        response = Net::HTTP.get_response(uri)
+    
+        if response.is_a?(Net::HTTPSuccess)
+          schedules = JSON.parse(response.body)
+          detailed_schedules = schedules.map do |schedule|
+            # Ambil informasi dokter berdasarkan doctor_id
+            doctor_uri = URI("#{DOCTOR_SERVICE_URL}/doctors/#{schedule['doctor_id']}")
+            doctor_response = Net::HTTP.get_response(doctor_uri)
+            doctor = JSON.parse(doctor_response.body) if doctor_response.is_a?(Net::HTTPSuccess)
+    
+            # Ambil informasi timeslot berdasarkan timeslot_id
+            timeslot_uri = URI("#{DOCTOR_SERVICE_URL}/timeslots/#{schedule['timeslot_id']}")
+            timeslot_response = Net::HTTP.get_response(timeslot_uri)
+            timeslot = JSON.parse(timeslot_response.body) if timeslot_response.is_a?(Net::HTTPSuccess)
+    
+            # Ambil informasi ruangan berdasarkan room_id
+            room_uri = URI("#{DOCTOR_SERVICE_URL}/rooms/#{schedule['room_id']}")
+            room_response = Net::HTTP.get_response(room_uri)
+            room = JSON.parse(room_response.body) if room_response.is_a?(Net::HTTPSuccess)
+    
+            # Gabungkan semua informasi menjadi jadwal yang detil
+            {
+              schedule_id: schedule['id'],
+              doctor_name: doctor ? doctor['name'] : 'Unknown Doctor',
+              doctor_specialization: doctor ? doctor['specialization'] : 'Unknown Specialization',
+              timeslot_day: timeslot ? timeslot['day'] : 'Unknown Day',
+              timeslot_start_time: timeslot ? timeslot['start_time'] : 'Unknown Start Time',
+              timeslot_end_time: timeslot ? timeslot['end_time'] : 'Unknown End Time',
+              room_name: room ? room['name'] : 'Unknown Room',
+              date: schedule['date']
+            }
+          end
+    
+          content_type :json
+          { success: true, schedules: detailed_schedules }.to_json
+        else
+          halt 500, { error: "Gagal mengambil jadwal dari DoctorService" }.to_json
+        end
+      rescue => e
+        halt 500, { error: "Terjadi kesalahan: #{e.message}" }.to_json
+      end
+    end    
   end
 end
