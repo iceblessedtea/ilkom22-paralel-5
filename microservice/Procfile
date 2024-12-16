@@ -1,4 +1,4 @@
-appointments: cd appointments && bundle exec rackup --host 0.0.0.0 --port 7862
 doctors: cd doctors && bundle exec rackup --host 0.0.0.0 --port 7861
 medical_records: cd medical_records && bundle exec rackup --host 0.0.0.0 --port 7863
 patients: cd patients &&  bundle exec rackup --host 0.0.0.0 --port 7860
+appointments: cd appointments && bundle exec rackup --host 0.0.0.0 --port 7862

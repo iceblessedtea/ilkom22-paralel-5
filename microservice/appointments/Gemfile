@@ -19,3 +19,7 @@ gem 'sqlite3'
 gem 'webrick'
 
 gem 'httpx'
+
+gem 'concurrent-ruby'
+
+gem 'puma'
