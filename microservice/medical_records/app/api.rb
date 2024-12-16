@@ -1,25 +1,34 @@
-require 'sinatra' 
+require 'sinatra'
 require 'sequel'
-require 'sqlite3'
 require 'json'
 require 'time'
+require 'net/http'
+require 'uri'
 
 module MedicalRecordService
   class API < Sinatra::Base
     # Inisialisasi database SQLite
-    DB = Sequel.sqlite("./db/medical_records.db")
+    DB = Sequel.sqlite("C:/Semester 5/ilkom22-paralel-5/microservice/medical_records/db/medical_records_data_baru.db")
+    # Endpoint ke service pasien
+    PATIENT_SERVICE_URL = "http://localhost:7860" # Sesuaikan dengan alamat service pasien
 
     # Mengambil data dari tabel pasien
     def fetch_patient(patient_id)
-      DB[:patients].where(id: patient_id).first
+      uri = URI("#{PATIENT_SERVICE_URL}/patients/#{patient_id}")
+      response = Net::HTTP.get_response(uri)
+      if response.is_a?(Net::HTTPSuccess)
+        JSON.parse(response.body)
+      else
+        nil
+      end
     end
 
     get "/" do
       content_type :json
-      { message: "Service rekam medik Berjalan" }.to_json
+      { message: "Service rekam medik berjalan" }.to_json
     end 
 
-    # Route untuk menampilkan semua medical records
+    # Route untuk menampilkan semua rekam medis
     get '/medical_records' do
       records = DB[:medical_records].all
       records.map! do |record|
@@ -27,8 +36,8 @@ module MedicalRecordService
         {
           id: record[:id],
           patient_id: record[:patient_id],
-          patient_name: patient[:name],
-          notes: record[:notes],
+          # patient_name: patient['name'], # Ambil nama pasien dari service pasien
+          diagnosis: record[:diagnosis],
           created_at: record[:created_at],
           updated_at: record[:updated_at]
         }
@@ -37,7 +46,7 @@ module MedicalRecordService
       records.to_json
     end
 
-    # Route untuk menampilkan medical record berdasarkan ID
+    # Route untuk menampilkan rekam medis berdasarkan ID
     get '/medical_records/:id' do
       id = params['id'].to_i
       record = DB[:medical_records].where(id: id).first
@@ -47,8 +56,8 @@ module MedicalRecordService
         {
           id: record[:id],
           patient_id: record[:patient_id],
-          patient_name: patient[:name],
-          notes: record[:notes],
+          patient_name: patient['name'], # Ambil nama pasien dari service pasien
+          diagnosis: record[:diagnosis],
           created_at: record[:created_at],
           updated_at: record[:updated_at]
         }.to_json
@@ -58,21 +67,53 @@ module MedicalRecordService
       end
     end
 
-    # Route untuk menambahkan medical record
+    # Route untuk menambahkan banyak rekam medis sekaligus
     post '/medical_records' do
-      record_data = JSON.parse(request.body.read)
-      record_data['created_at'] = Time.now
-      record_data['updated_at'] = Time.now
+      begin
+        records_data = JSON.parse(request.body.read)
+        
+        # Validasi apakah data yang dikirimkan berbentuk array
+        if !records_data.is_a?(Array) || records_data.empty?
+          status 400
+          return { error: "Data harus berupa array dan tidak boleh kosong." }.to_json
+        end
 
-      # Save to database
-      DB[:medical_records].insert(record_data)
-      record_id = DB[:medical_records].max(:id)
+        # Menambahkan setiap rekam medis ke database
+        inserted_ids = []
+        records_data.each do |record|
+          # Validasi bahwa field 'patient_id' dan 'diagnosis' ada
+          if record['patient_id'].nil? || record['diagnosis'].nil?
+            status 400
+            return { error: "Setiap record harus memiliki patient_id dan diagnosis." }.to_json
+          end
 
-      status 201
-      { success: true, record_id: record_id }.to_json
+          # Pastikan bahwa patient_id valid dengan mengecek ke service pasien
+          patient = fetch_patient(record['patient_id'])
+          if patient.nil?
+            status 404
+            return { error: "Patient dengan ID #{record['patient_id']} tidak ditemukan" }.to_json
+          end
+
+          record['created_at'] = Time.now
+          record['updated_at'] = Time.now
+
+          # Simpan rekam medis ke database
+          inserted_id = DB[:medical_records].insert(record)
+          inserted_ids << inserted_id
+        end
+
+        status 201
+        { success: true, inserted_ids: inserted_ids }.to_json
+      rescue JSON::ParserError => e
+        status 400
+        { error: "Payload JSON tidak valid: #{e.message}" }.to_json
+      rescue StandardError => e
+        status 500
+        { error: "Terjadi kesalahan: #{e.message}" }.to_json
+      end
     end
 
-    # Route untuk mengedit medical record berdasarkan ID
+    # Route untuk mengedit rekam medis berdasarkan ID
     put '/medical_records/:id' do
       id = params['id'].to_i
       record_data = JSON.parse(request.body.read)
@@ -89,7 +130,7 @@ module MedicalRecordService
       end
     end
 
-    # Route untuk menghapus medical record berdasarkan ID
+    # Route untuk menghapus rekam medis berdasarkan ID
     delete '/medical_records/:id' do
       id = params['id'].to_i
       record = DB[:medical_records].where(id: id).first
