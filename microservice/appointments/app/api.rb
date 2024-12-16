@@ -34,24 +34,36 @@ module AppointmentService
     # Root endpoint to check service health
     get '/' do
       begin
-        # Ambil data dari service lain
+        # Ambil data dari service Patient dan Doctor
         patient_response = HTTPX.get("#{PATIENT_URL}/patients")
         doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors")
-      
-        # Cek apakah respons valid
-        if patient_response.status == 200 && doctor_response.status == 200
-          status 200
-          { success: true, message: "Server berjalan dengan baik." }.to_json
-        else
-          status 500
-          { error: "Gagal mengambil data dari service lain." }.to_json
-        end
+    
+        # Status masing-masing service dalam format JSON
+        doctor_message = if doctor_response.status == 200
+                           { message: "Service Doctors berjalan dengan baik" }
+                         else
+                           { message: "Service Doctors gagal dengan status #{doctor_response.status}" }
+                         end.to_json
+    
+        patient_message = if patient_response.status == 200
+                            { message: "Service Patients berjalan dengan baik" }
+                          else
+                            { message: "Service Patients gagal dengan status #{patient_response.status}" }
+                          end.to_json
+    
+        appointment_message = { message: "Service Appointments berjalan dengan baik" }.to_json
+    
+        # Gabungkan semua pesan dengan newline untuk tampil terpisah
+        response_text = "#{doctor_message}\n#{patient_message}\n#{appointment_message}"
+    
+        status 200
+        response_text
       rescue => e
+        # Jika terjadi error
         status 500
-        { error: "Terjadi kesalahan: #{e.message}" }.to_json
-      end        
+        { message: "Terjadi kesalahan: #{e.message}" }.to_json
+      end
     end
-
     
 
     # Create a new appointment
