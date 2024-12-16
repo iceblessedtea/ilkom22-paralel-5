@@ -15,11 +15,70 @@
       get '/' do
         begin
           patient_response = HTTPX.get("#{PATIENT_URL}/patients")
+          # Panggil API Doctor Service untuk mendapatkan data dokter
           doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors")
+          # Panggil API Doctor Service untuk mendapatkan Schedule 
+          doctor_schedule_response = HTTPX.get("#{DOCTOR_URL}/schedules")
+
+          timeslot_response = HTTPX.get("#{DOCTOR_URL}/timeslots")
+          room_response = HTTPX.get("#{DOCTOR_URL}/rooms")
+
+          patients = JSON.parse(patient_response.body.to_s) if patient_response.status == 200
+          doctors = JSON.parse(doctor_response.body.to_s) if doctor_response.status == 200
+          schedules = JSON.parse(doctor_schedule_response.body.to_s) if doctor_schedule_response.status == 200
+          timeslots = JSON.parse(timeslot_response.body.to_s) if timeslot_response.status == 200
+          rooms = JSON.parse(room_response.body.to_s) if room_response.status == 200
+
+          # Cek apakah semua data berhasil diambil
+          unless patients
+            status 500
+            return { error: "Gagal mengambil data pasien dari service Patient." }.to_json
+          end
+
+          unless doctors
+            status 500
+            return { error: "Gagal mengambil data dokter dari service Doctor." }.to_json
+          end
+
+          unless schedules
+            status 500
+            return { error: "Gagal mengambil data jadwal dari service Doctor." }.to_json
+          end
+          unless timeslots
+            status 500
+            return { error: "Gagal mengambil data timeslot dari service Doctor." }.to_json
+          end
+          
+          unless rooms
+            status 500
+            return { error: "Gagal mengambil data room dari service Doctor." }.to_json
+          end
+          
+
+          data = doctors.map do |doctor|
+            doctor_schedules = schedules.select { |s| s["doctor_id"] == doctor["id"] }
+            
+            {
+              doctor_id: doctor["id"],
+              name: doctor["name"],
+              specialization: doctor["specialization"],
+              schedules: doctor_schedules.map do |s| 
+                timeslot = timeslots.find { |t| t["id"] == s["timeslot_id"] }
+                room = rooms.find { |r| r["id"] == s["room_id"] }
+                
+                {
+                  date: s["date"],
+                  room_name: room ? room["name"] : "Unknown Room",
+                  timeslot_name: timeslot ? timeslot["name"] : "Unknown Timeslot"
+                }
+              end
+            }
+          end
 
           content_type :json
           {
             message: "Service janjitemu berjalan dengan baik",
+            data: data
           }.to_json
         rescue => e
           status 500
@@ -91,7 +150,6 @@
             appointments_data = appointments.map do |appointment|
               patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
               doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
-                
               unless patient_response.status == 200 && doctor_response.status == 200
                     puts "Error fetching data: Patient response status #{patient_response.status}, Doctor response status #{doctor_response.status}"
                     next # Skip this appointment if there's an error
@@ -100,7 +158,6 @@
                 patient_data = JSON.parse(patient_response.body.to_s)
                 doctor_data = JSON.parse(doctor_response.body.to_s)
                 patient_name = patient_data["patient"]["name"]
-
                 {
                     appointment_id: appointment[:id],
                     patient_id: appointment[:patient_id],
@@ -167,11 +224,12 @@
           appointments_for_doctor_data = appointments_for_doctor.map do |appointment|
             patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
             doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
-          
+            
             if patient_response.status == 200 && doctor_response.status == 200
               patient_data = JSON.parse(patient_response.body.to_s)
               doctor_data = JSON.parse(doctor_response.body.to_s)
               patient_name = patient_data["patient"]["name"]
+
               {
                 appointment_id: appointment[:id],
                 patient_id: appointment[:patient_id],
