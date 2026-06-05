@@ -13,7 +13,7 @@ set :server, :puma
 
 PATIENT_URL = ENV.fetch('PATIENT_URL', 'http://localhost:7860')
 DOCTOR_URL = ENV.fetch('DOCTOR_URL', 'http://localhost:7861')
-DATABASE_URL = ENV.fetch('DATABASE_URL', 'sqlite://db/new_appointments.db')
+DATABASE_URL = ENV.fetch('DATABASE_URL', 'postgres://healthcare:healthcare@localhost:5432/appointment_service')
 
 module AppointmentService
   class API < Sinatra::Base

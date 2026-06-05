@@ -15,7 +15,7 @@ gem "rackup", "~> 2.1"
 
 gem "sequel", "~> 5.82"
 
-gem "sqlite3", "~> 2.0"
+gem "pg", "~> 1.5"
 
 gem "mail", "~> 2.8"
 

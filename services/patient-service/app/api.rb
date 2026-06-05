@@ -8,7 +8,7 @@ require 'httpx'
 
 module PatientService
   class API < Sinatra::Base
-    DB = Sequel.connect(ENV.fetch('DATABASE_URL', 'sqlite://db/patients.db'))
+    DB = Sequel.connect(ENV.fetch('DATABASE_URL', 'postgres://healthcare:healthcare@localhost:5432/patient_service'))
     MEDICAL_RECORD_URL = ENV.fetch('MEDICAL_RECORD_URL', 'http://localhost:7863')
     DOCTOR_URL = ENV.fetch('DOCTOR_URL', 'http://localhost:7861')
 

@@ -1,14 +1,11 @@
 ENV["RACK_ENV"] = "test"
-ENV["DATABASE_URL"] = "sqlite://#{File.expand_path("tmp/test-doctors.db", __dir__)}"
+ENV["DATABASE_URL"] = ENV.fetch("TEST_DATABASE_URL", "postgres://healthcare:healthcare@localhost:5432/doctor_service_test")
 ENV["APPOINTMENT_URL"] = "http://localhost:7862"
 
-require "fileutils"
 require "rack/test"
 require "sequel"
 require "sequel/extensions/migration"
 
-FileUtils.mkdir_p(File.expand_path("tmp", __dir__))
-FileUtils.rm_f(File.expand_path("tmp/test-doctors.db", __dir__))
 require_relative "../app/api"
 
 RSpec.configure do |config|

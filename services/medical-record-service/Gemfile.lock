@@ -191,6 +191,8 @@ GEM
       opentelemetry-semantic_conventions
     opentelemetry-semantic_conventions (1.39.0)
       opentelemetry-api (~> 1.0)
+    pg (1.6.3-x64-mingw-ucrt)
+    pg (1.6.3-x86_64-linux)
     rack (3.1.8)
     rack-protection (4.1.1)
       base64 (>= 0.1.0)
@@ -226,8 +228,6 @@ GEM
       rack-protection (= 4.1.1)
       rack-session (>= 2.0.0, < 3)
       tilt (~> 2.0)
-    sqlite3 (2.4.1-x64-mingw-ucrt)
-    sqlite3 (2.4.1-x86_64-linux-gnu)
     tilt (2.4.0)
     webrick (1.9.1)
 
@@ -240,13 +240,13 @@ DEPENDENCIES
   opentelemetry-exporter-otlp
   opentelemetry-instrumentation-all
   opentelemetry-sdk
+  pg (~> 1.5)
   rack
   rack-test (~> 2.1)
   rackup
   rspec (~> 3.13)
   sequel
   sinatra (~> 4.1)
-  sqlite3
   webrick
 
 BUNDLED WITH

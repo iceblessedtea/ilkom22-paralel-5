@@ -6,7 +6,7 @@ require 'sequel'
 
 module DoctorService
   class API < Sinatra::Base
-    DB = Sequel.connect(ENV.fetch('DATABASE_URL', 'sqlite://db/doctors.db'))
+    DB = Sequel.connect(ENV.fetch('DATABASE_URL', 'postgres://healthcare:healthcare@localhost:5432/doctor_service'))
 
     APPOINTMENT_URL = ENV.fetch('APPOINTMENT_URL', 'http://localhost:7862')
 
