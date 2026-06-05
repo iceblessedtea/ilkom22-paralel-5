@@ -18,6 +18,9 @@ gem 'sqlite3'
 
 gem 'webrick'
 
+gem "rack-test", "~> 2.1"
+gem "rspec", "~> 3.13"
+
 gem "opentelemetry-sdk"
 gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all"
