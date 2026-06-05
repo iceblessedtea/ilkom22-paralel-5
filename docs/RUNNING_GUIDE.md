@@ -129,19 +129,38 @@ Frontend membaca base URL backend dari `VITE_API_BASE_URL` (lihat [Environment](
 
 ## 5. Menjalankan Test
 
-Backend (per service):
+Backend seluruh service:
 
-```bash
-cd services/patient-service
-bundle exec rspec
+```powershell
+services/scripts/run-rspec.ps1
 ```
 
-Frontend:
+```bash
+bash services/scripts/run-rspec.sh
+```
+
+Frontend test, lint, dan build:
 
 ```bash
 cd frontend
 npm test
+npm run lint
+npm run build
 ```
+
+Smoke test:
+
+```powershell
+services/scripts/smoke-local.ps1
+services/scripts/smoke-docker.ps1
+```
+
+```bash
+bash services/scripts/smoke-local.sh
+bash services/scripts/smoke-docker.sh
+```
+
+Panduan lengkap tersedia di [Testing dan Quality](TESTING.md).
 
 ## Troubleshooting
 

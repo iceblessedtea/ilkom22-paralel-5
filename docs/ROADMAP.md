@@ -47,12 +47,14 @@ Status: selesai.
 
 ## Phase 5: Testing dan Quality
 
-- [ ] Menambahkan unit test RSpec untuk service utama.
-- [ ] Menambahkan request spec untuk endpoint penting.
-- [ ] Menambahkan test frontend dengan Vitest dan React Testing Library.
-- [ ] Menambahkan linting yang konsisten.
-- [ ] Menambahkan smoke test untuk mode Docker dan non-Docker.
-- [ ] Menyiapkan CI untuk menjalankan test otomatis.
+Status: selesai.
+
+- [x] Menambahkan unit test RSpec untuk service utama.
+- [x] Menambahkan request spec untuk endpoint penting.
+- [x] Menambahkan test frontend dengan Vitest dan React Testing Library.
+- [x] Menambahkan linting yang konsisten.
+- [x] Menambahkan smoke test untuk mode Docker dan non-Docker.
+- [x] Menyiapkan CI untuk menjalankan test otomatis.
 
 ## Phase 6: Database dan Deployment
 

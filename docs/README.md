@@ -22,9 +22,10 @@ Project ini adalah **Sistem Layanan Kesehatan (Healthcare)** sederhana yang diba
 7. [API Reference](API_REFERENCE.md) - daftar endpoint tiap service.
 8. [Observability](OBSERVABILITY.md) - setup dan verifikasi OpenTelemetry.
 9. [Trace Flow Example](TRACE_FLOW_EXAMPLE.md) - contoh alur trace antar-service.
-10. [Roadmap](ROADMAP.md) - fase pengembangan dan definition of done.
-11. [Frontend Design](FRONTEND_DESIGN.md) - design system dan pola integrasi frontend ke backend.
-12. [Technical Decisions](TECHNICAL_DECISIONS.md) - catatan keputusan teknis.
+10. [Testing dan Quality](TESTING.md) - RSpec, Vitest, lint, smoke test, dan CI.
+11. [Roadmap](ROADMAP.md) - fase pengembangan dan definition of done.
+12. [Frontend Design](FRONTEND_DESIGN.md) - design system dan pola integrasi frontend ke backend.
+13. [Technical Decisions](TECHNICAL_DECISIONS.md) - catatan keputusan teknis.
 
 ## Konvensi Dokumentasi
 
