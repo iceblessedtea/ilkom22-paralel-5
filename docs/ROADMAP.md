@@ -37,11 +37,13 @@ Status: selesai.
 
 ## Phase 4: API dan Integrasi Frontend
 
-- [ ] Menyusun ulang endpoint agar konsisten.
-- [ ] Menambahkan dokumentasi API.
-- [ ] Menghubungkan frontend ke backend services via `VITE_API_BASE_URL`.
-- [ ] Menambahkan error handling dan loading state pada frontend.
-- [ ] Menyamakan strategi CORS atau penggunaan API Gateway.
+Status: selesai.
+
+- [x] Menyusun ulang endpoint agar konsisten.
+- [x] Menambahkan dokumentasi API.
+- [x] Menghubungkan frontend ke backend services via `VITE_API_BASE_URL`.
+- [x] Menambahkan error handling dan loading state pada frontend.
+- [x] Menyamakan strategi CORS atau penggunaan API Gateway.
 
 ## Phase 5: Testing dan Quality
 

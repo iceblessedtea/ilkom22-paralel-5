@@ -125,7 +125,7 @@ npm install
 npm run dev
 ```
 
-Frontend membaca base URL backend dari `VITE_API_BASE_URL` (lihat [Environment](ENVIRONMENT.md)). Default development mengarah ke Appointment Service; saat memakai Docker + Gateway, set ke `http://localhost`.
+Frontend membaca base URL backend dari `VITE_API_BASE_URL` (lihat [Environment](ENVIRONMENT.md)). Default development mengarah ke API Gateway di `http://localhost`, dan semua request frontend memakai path `/api/...`.
 
 ## 5. Menjalankan Test
 
@@ -147,7 +147,7 @@ npm test
 
 - **Port sudah dipakai**: ubah `PORT` di `.env` service terkait, atau hentikan proses yang memakai port.
 - **Service tidak bisa memanggil service lain (non-Docker)**: pastikan variabel `*_URL` mengarah ke `http://localhost:<port>`, bukan nama container Docker.
-- **Frontend gagal fetch (CORS)**: gunakan API Gateway (mode Docker) atau aktifkan CORS di service backend.
+- **Frontend gagal fetch (CORS)**: pastikan backend dijalankan melalui API Gateway dan `VITE_API_BASE_URL` mengarah ke host gateway.
 - **Trace tidak muncul**: pastikan `OTEL_ENABLED=true` dan `OTEL_EXPORTER_OTLP_ENDPOINT` mengarah ke collector yang aktif.
 
 ## Catatan

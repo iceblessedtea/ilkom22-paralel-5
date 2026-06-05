@@ -17,7 +17,7 @@ Project memakai environment variable sebagai sumber konfigurasi utama, agar mode
 | `MEDICAL_RECORD_URL`          | `http://localhost:7863`    | Base URL Medical Record Service                          |
 | `OTEL_ENABLED`                | `false`                    | Aktifkan instrumentasi OpenTelemetry                     |
 | `OTEL_SERVICE_NAME`           | nama service               | Nama service pada trace                                  |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318`    | Endpoint base OTLP collector untuk exporter Ruby       |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318`    | Endpoint base OTLP collector untuk exporter Ruby        |
 
 ### Contoh `.env.example` (non-Docker)
 
@@ -48,14 +48,14 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
 
 | Variabel            | Default                 | Keterangan                            |
 | ------------------- | ----------------------- | ------------------------------------- |
-| `VITE_API_BASE_URL` | `http://localhost:7862` | Base URL API yang dikonsumsi frontend |
+| `VITE_API_BASE_URL` | `http://localhost` | Base URL API Gateway yang dikonsumsi frontend |
 
-Pada mode Docker dengan API Gateway, set `VITE_API_BASE_URL=http://localhost` agar seluruh request lewat Gateway.
+Frontend memakai path `/api/...` melalui API Gateway. Pada mode Docker, gunakan `VITE_API_BASE_URL=http://localhost`. Jika gateway dijalankan di host atau port lain, ubah nilai ini tanpa mengubah kode frontend.
 
 ### Contoh `frontend/.env.example`
 
 ```text
-VITE_API_BASE_URL=http://localhost:7862
+VITE_API_BASE_URL=http://localhost
 ```
 
 ## Prinsip

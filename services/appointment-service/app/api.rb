@@ -149,10 +149,13 @@ module AppointmentService
     # Get all appointments
     get '/appointments' do
       begin
-        appointments = DB[:appointments].all
+        appointment_query = DB[:appointments]
+        appointment_query = appointment_query.where(doctor_id: params['doctor_id'].to_i) if params['doctor_id']
+        appointment_query = appointment_query.where(patient_id: params['patient_id'].to_i) if params['patient_id']
+        appointments = appointment_query.all
         if appointments.empty?
-          status 404
-          return { error: "No appointments found" }.to_json
+          content_type :json
+          return [].to_json
         end
         appointments_data = Concurrent::Array.new
         semaphore = Concurrent::Semaphore.new(5)
@@ -227,6 +230,34 @@ module AppointmentService
       end
     end
 
+    get '/appointments/by-doctor/:doctor_id' do
+      call env.merge(
+        'PATH_INFO' => '/appointments',
+        'QUERY_STRING' => "doctor_id=#{params['doctor_id']}"
+      )
+    end
+
+    get '/appointments/by-patient/:patient_id' do
+      call env.merge(
+        'PATH_INFO' => '/appointments',
+        'QUERY_STRING' => "patient_id=#{params['patient_id']}"
+      )
+    end
+
+    get '/appointments/doctor/:doctor_id' do
+      call env.merge(
+        'PATH_INFO' => '/appointments',
+        'QUERY_STRING' => "doctor_id=#{params['doctor_id']}"
+      )
+    end
+
+    get '/appointments/patients/:patient_id' do
+      call env.merge(
+        'PATH_INFO' => '/appointments',
+        'QUERY_STRING' => "patient_id=#{params['patient_id']}"
+      )
+    end
+
     # Get an appointment by ID
     get '/appointments/:id' do
       appointment = DB[:appointments].where(id: params['id']).first
@@ -259,8 +290,8 @@ module AppointmentService
       end
     end
 
-    # Get appointments by doctor ID
-    get '/appointments/doctor/:doctor_id' do
+    # Legacy implementation kept for reference, but canonical routes above handle these paths first.
+    get '/legacy/appointments/doctor/:doctor_id' do
       doctor_id = params['doctor_id'].to_i
     
       # Ambil janji temu untuk doctor_id
@@ -311,8 +342,7 @@ module AppointmentService
     end
     
 
-    # Get appointments by patient ID
-    get '/appointments/patients/:patient_id' do
+    get '/legacy/appointments/patients/:patient_id' do
       patient_id = params['patient_id'].to_i
       appointments_for_patient = DB[:appointments].where(patient_id: patient_id).all
       if appointments_for_patient.empty?
@@ -350,8 +380,10 @@ module AppointmentService
           '/': 'Check service health',
           '/appointments': 'CRUD operations for appointments',
           '/appointments/:id': 'Get details of an appointment',
-          '/appointments/doctor/:doctor_id': 'Get appointments by doctor ID',
-          '/appointments/patients/:patient_id': 'Get appointments by patient ID'
+          '/appointments?doctor_id=:doctor_id': 'Get appointments by doctor ID',
+          '/appointments?patient_id=:patient_id': 'Get appointments by patient ID',
+          '/appointments/by-doctor/:doctor_id': 'Get appointments by doctor ID',
+          '/appointments/by-patient/:patient_id': 'Get appointments by patient ID'
         }
       }.to_json
     end

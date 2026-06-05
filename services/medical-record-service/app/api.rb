@@ -18,7 +18,8 @@ module MedicalRecordService
       uri = URI("#{PATIENT_URL}/patients/#{patient_id}")
       response = Net::HTTP.get_response(uri)
       if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
+        patient_payload = JSON.parse(response.body)
+        patient_payload['patient'] || patient_payload
       else
         nil
       end
@@ -46,7 +47,7 @@ module MedicalRecordService
         {
           id: record[:id],
           patient_id: record[:patient_id],
-          # patient_name: patient['name'], # Ambil nama pasien dari service pasien
+          patient_name: patient ? patient['name'] : nil,
           diagnosis: record[:diagnosis],
           created_at: record[:created_at],
           updated_at: record[:updated_at]
@@ -66,7 +67,7 @@ module MedicalRecordService
         {
           id: record[:id],
           patient_id: record[:patient_id],
-          patient_name: patient['name'], # Ambil nama pasien dari service pasien
+          patient_name: patient ? patient['name'] : nil,
           diagnosis: record[:diagnosis],
           created_at: record[:created_at],
           updated_at: record[:updated_at]
