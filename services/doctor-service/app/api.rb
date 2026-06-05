@@ -6,14 +6,19 @@ require 'sequel'
 
 module DoctorService
   class API < Sinatra::Base
-    DB = Sequel.connect('sqlite://db/doctors.db')
+    DB = Sequel.connect(ENV.fetch('DATABASE_URL', 'sqlite://db/doctors.db'))
 
-    APPOINTMENT_SERVICE_URL = 'http://appointments:7862'
+    APPOINTMENT_URL = ENV.fetch('APPOINTMENT_URL', 'http://localhost:7862')
 
     # Route Home
     get '/' do
       content_type :json
       { message: "Service doctor is up"}.to_json
+    end
+
+    get '/health' do
+      content_type :json
+      { status: 'ok', service: 'doctor-service' }.to_json
     end
 
     # Routes for Doctors
@@ -89,7 +94,7 @@ module DoctorService
 
       if doctor
         begin
-          uri = URI("#{APPOINTMENT_SERVICE_URL}/appointments?doctor_id=#{doctor[:id]}")
+          uri = URI("#{APPOINTMENT_URL}/appointments?doctor_id=#{doctor[:id]}")
           response = Net::HTTP.get_response(uri)
 
           if response.code == '200'
@@ -282,6 +287,12 @@ module DoctorService
     # Routes for Schedules
     get '/schedules' do
       schedules = DB[:schedules].all
+      content_type :json
+      schedules.to_json
+    end
+
+    get '/doctors/:id/schedules' do
+      schedules = DB[:schedules].where(doctor_id: params['id'].to_i).all
       content_type :json
       schedules.to_json
     end

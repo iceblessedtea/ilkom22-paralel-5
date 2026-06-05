@@ -17,7 +17,7 @@ Semua service mengembalikan dan menerima JSON. Base URL mengikuti [Environment](
 ## Health Check (semua service)
 
 ```text
-GET /health  ->  200 { "status": "ok" }
+GET /health  ->  200 { "status": "ok", "service": "<nama-service>" }
 ```
 
 ## Patient Service (`:7860`)
@@ -63,6 +63,8 @@ GET /health  ->  200 { "status": "ok" }
 | POST   | `/medical-records`     | Tambah rekam medis (validasi pasien ke Patient Service) |
 | PUT    | `/medical-records/:id` | Ubah rekam medis                                        |
 | DELETE | `/medical-records/:id` | Hapus rekam medis                                       |
+
+> Catatan kompatibilitas: Medical Record Service juga masih menerima path lama `/medical_records` agar klien lama tidak langsung rusak.
 
 ## Contoh Request
 

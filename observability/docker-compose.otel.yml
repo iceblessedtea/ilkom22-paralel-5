@@ -9,7 +9,7 @@ services:
       - "4318:4318"
     restart: unless-stopped
 
-  doctors:
+  doctor-service:
     environment:
       - OTEL_ENABLED=true
       - OTEL_SERVICE_NAME=doctor-service
@@ -17,7 +17,7 @@ services:
     depends_on:
       - otel-collector
 
-  patients:
+  patient-service:
     environment:
       - OTEL_ENABLED=true
       - OTEL_SERVICE_NAME=patient-service
@@ -25,7 +25,7 @@ services:
     depends_on:
       - otel-collector
 
-  appointments:
+  appointment-service:
     environment:
       - OTEL_ENABLED=true
       - OTEL_SERVICE_NAME=appointment-service
@@ -33,11 +33,10 @@ services:
     depends_on:
       - otel-collector
 
-  medical_records:
+  medical-record-service:
     environment:
       - OTEL_ENABLED=true
       - OTEL_SERVICE_NAME=medical-record-service
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
     depends_on:
       - otel-collector
-

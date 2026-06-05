@@ -8,9 +8,9 @@ Project memakai environment variable sebagai sumber konfigurasi utama, agar mode
 
 | Variabel                      | Default (non-Docker)       | Keterangan                                               |
 | ----------------------------- | -------------------------- | -------------------------------------------------------- |
-| `PORT`                        | sesuai service (7860–7863) | Port tempat service berjalan                             |
+| `PORT`                        | sesuai service (7860-7863) | Port tempat service berjalan                             |
 | `RACK_ENV`                    | `development`              | Environment Rack (`development` / `production` / `test`) |
-| `DATABASE_URL`                | `sqlite://db/<service>.db` | Lokasi database SQLite service                           |
+| `DATABASE_URL`                | sesuai service             | Lokasi database SQLite service                           |
 | `PATIENT_URL`                 | `http://localhost:7860`    | Base URL Patient Service                                 |
 | `DOCTOR_URL`                  | `http://localhost:7861`    | Base URL Doctor Service                                  |
 | `APPOINTMENT_URL`             | `http://localhost:7862`    | Base URL Appointment Service                             |
@@ -24,7 +24,7 @@ Project memakai environment variable sebagai sumber konfigurasi utama, agar mode
 ```text
 PORT=7862
 RACK_ENV=development
-DATABASE_URL=sqlite://db/appointments.db
+DATABASE_URL=sqlite://db/new_appointments.db
 PATIENT_URL=http://localhost:7860
 DOCTOR_URL=http://localhost:7861
 APPOINTMENT_URL=http://localhost:7862
@@ -63,3 +63,12 @@ VITE_API_BASE_URL=http://localhost:7862
 - Jangan commit file `.env` asli; commit hanya `.env.example`.
 - Setiap penambahan variabel baru wajib ditambahkan ke `.env.example` dan ke dokumen ini.
 - Nilai default harus aman untuk development lokal (non-Docker).
+
+## File yang Tersedia
+
+- `services/.env.example` untuk contoh konfigurasi backend secara umum.
+- `services/patient-service/.env.example`
+- `services/doctor-service/.env.example`
+- `services/appointment-service/.env.example`
+- `services/medical-record-service/.env.example`
+- `frontend/.env.example`

@@ -8,14 +8,14 @@ require 'uri'
 module MedicalRecordService
   class API < Sinatra::Base
     # Inisialisasi database SQLite
-    DB = Sequel.connect("sqlite://db/medical_records_data_baru.db")
+    DB = Sequel.connect(ENV.fetch('DATABASE_URL', 'sqlite://db/medical_records_data_baru.db'))
     
     # Endpoint ke service pasien
-    PATIENT_SERVICE_URL = "http://localhost:7860" # Sesuaikan dengan alamat service pasien
+    PATIENT_URL = ENV.fetch('PATIENT_URL', 'http://localhost:7860')
 
     # Mengambil data dari tabel pasien
     def fetch_patient(patient_id)
-      uri = URI("#{PATIENT_SERVICE_URL}/patients/#{patient_id}")
+      uri = URI("#{PATIENT_URL}/patients/#{patient_id}")
       response = Net::HTTP.get_response(uri)
       if response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)
@@ -28,6 +28,15 @@ module MedicalRecordService
       content_type :json
       { message: "Service rekam medik berjalan" }.to_json
     end 
+
+    get "/health" do
+      content_type :json
+      { status: 'ok', service: 'medical-record-service' }.to_json
+    end
+
+    get '/medical-records' do
+      call env.merge('PATH_INFO' => '/medical_records')
+    end
 
     # Route untuk menampilkan semua rekam medis
     get '/medical_records' do
@@ -66,6 +75,10 @@ module MedicalRecordService
         status 404
         { error: "Rekam medik dengan ID #{id} tidak ditemukan" }.to_json
       end
+    end
+
+    get '/medical-records/:id' do
+      call env.merge('PATH_INFO' => "/medical_records/#{params['id']}")
     end
 
     # Route untuk menambahkan banyak rekam medis sekaligus
@@ -114,6 +127,10 @@ module MedicalRecordService
       end
     end
 
+    post '/medical-records' do
+      call env.merge('PATH_INFO' => '/medical_records')
+    end
+
     # Route untuk mengedit rekam medis berdasarkan ID
     put '/medical_records/:id' do
       id = params['id'].to_i
@@ -131,6 +148,10 @@ module MedicalRecordService
       end
     end
 
+    put '/medical-records/:id' do
+      call env.merge('PATH_INFO' => "/medical_records/#{params['id']}")
+    end
+
     # Route untuk menghapus rekam medis berdasarkan ID
     delete '/medical_records/:id' do
       id = params['id'].to_i
@@ -143,6 +164,10 @@ module MedicalRecordService
         status 404
         { error: "Rekam medik dengan ID #{id} tidak ditemukan" }.to_json
       end
+    end
+
+    delete '/medical-records/:id' do
+      call env.merge('PATH_INFO' => "/medical_records/#{params['id']}")
     end
   end
 end

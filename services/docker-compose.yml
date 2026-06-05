@@ -1,35 +1,56 @@
 services:
-  doctors:
+  doctor-service:
     build: ./doctor-service
     ports:
       - "7861:7861"
     environment:
-      - RACK_ENV=production
-      - BIND=0.0.0.0
-    depends_on:
-      - appointments
+      RACK_ENV: production
+      PORT: 7861
+      DATABASE_URL: sqlite://db/doctors.db
+      APPOINTMENT_URL: http://appointment-service:7862
+      OTEL_ENABLED: "false"
 
-  medical_records:
+  medical-record-service:
     build: ./medical-record-service
     ports:
       - "7863:7863"
+    environment:
+      RACK_ENV: production
+      PORT: 7863
+      DATABASE_URL: sqlite://db/medical_records_data_baru.db
+      PATIENT_URL: http://patient-service:7860
+      OTEL_ENABLED: "false"
 
-  patients:
+  patient-service:
     build: ./patient-service
     ports:
       - "7860:7860"
+    environment:
+      RACK_ENV: production
+      PORT: 7860
+      DATABASE_URL: sqlite://db/patients.db
+      DOCTOR_URL: http://doctor-service:7861
+      MEDICAL_RECORD_URL: http://medical-record-service:7863
+      OTEL_ENABLED: "false"
 
-  appointments:
+  appointment-service:
     build: ./appointment-service
     ports:
       - "7862:7862"
+    environment:
+      RACK_ENV: production
+      PORT: 7862
+      DATABASE_URL: sqlite://db/new_appointments.db
+      PATIENT_URL: http://patient-service:7860
+      DOCTOR_URL: http://doctor-service:7861
+      OTEL_ENABLED: "false"
 
   api_gateway:
     build: ./api-gateway
     ports:
       - "80:80"
     depends_on:
-      - doctors
-      # - medical_records
-      - patients
-      - appointments
+      - doctor-service
+      - medical-record-service
+      - patient-service
+      - appointment-service

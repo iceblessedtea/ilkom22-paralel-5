@@ -8,8 +8,8 @@ $root = Split-Path -Parent $PSScriptRoot
 
 $env:PATIENT_URL = "http://localhost:7860"
 $env:DOCTOR_URL = "http://localhost:7861"
-$env:APPOINTMENT_SERVICE_URL = "http://localhost:7862"
-$env:REKAM_MEDIK_SERVICE_URL = "http://localhost:7863"
+$env:APPOINTMENT_URL = "http://localhost:7862"
+$env:MEDICAL_RECORD_URL = "http://localhost:7863"
 
 if ($WithOtel) {
   $env:OTEL_ENABLED = "true"
@@ -30,8 +30,8 @@ foreach ($service in $services) {
   $command = @"
 `$env:PATIENT_URL='$env:PATIENT_URL'
 `$env:DOCTOR_URL='$env:DOCTOR_URL'
-`$env:APPOINTMENT_SERVICE_URL='$env:APPOINTMENT_SERVICE_URL'
-`$env:REKAM_MEDIK_SERVICE_URL='$env:REKAM_MEDIK_SERVICE_URL'
+`$env:APPOINTMENT_URL='$env:APPOINTMENT_URL'
+`$env:MEDICAL_RECORD_URL='$env:MEDICAL_RECORD_URL'
 `$env:OTEL_ENABLED='$env:OTEL_ENABLED'
 `$env:OTEL_SERVICE_NAME='$($service.OtelName)'
 `$env:OTEL_EXPORTER_OTLP_ENDPOINT='$env:OTEL_EXPORTER_OTLP_ENDPOINT'

@@ -21,6 +21,9 @@ PowerShell:
 
 ```powershell
 Copy-Item services/patient-service/.env.example services/patient-service/.env
+Copy-Item services/doctor-service/.env.example services/doctor-service/.env
+Copy-Item services/appointment-service/.env.example services/appointment-service/.env
+Copy-Item services/medical-record-service/.env.example services/medical-record-service/.env
 Copy-Item frontend/.env.example frontend/.env
 ```
 
@@ -28,10 +31,13 @@ Bash:
 
 ```bash
 cp services/patient-service/.env.example services/patient-service/.env
+cp services/doctor-service/.env.example services/doctor-service/.env
+cp services/appointment-service/.env.example services/appointment-service/.env
+cp services/medical-record-service/.env.example services/medical-record-service/.env
 cp frontend/.env.example frontend/.env
 ```
 
-Ulangi untuk tiap service yang ingin dijalankan tanpa Docker.
+Untuk Docker, file `.env` per service tidak wajib karena `services/docker-compose.yml` sudah menyetel environment utama.
 
 ## 2. Menjalankan dengan Docker
 
@@ -99,7 +105,17 @@ Dengan OpenTelemetry:
 services/scripts/start-local.ps1 -WithOtel
 ```
 
-> Untuk macOS/Linux, disarankan menyediakan skrip setara `services/scripts/start-local.sh` (lihat [Roadmap](ROADMAP.md) Phase 2).
+Helper Bash/macOS/Linux:
+
+```bash
+services/scripts/start-local.sh
+```
+
+Dengan OpenTelemetry:
+
+```bash
+services/scripts/start-local.sh --with-otel
+```
 
 ## 4. Menjalankan Frontend
 

@@ -7,16 +7,17 @@ require 'logger'
 require 'puma'
 
 # Explicitly set Sinatra environment to production for better performance
-set :environment, :production
+set :environment, ENV.fetch('RACK_ENV', 'development').to_sym
 set :server, :puma
 
-PATIENT_URL = "http://patients:7860"
-DOCTOR_URL = "http://doctors:7861"
+PATIENT_URL = ENV.fetch('PATIENT_URL', 'http://localhost:7860')
+DOCTOR_URL = ENV.fetch('DOCTOR_URL', 'http://localhost:7861')
+DATABASE_URL = ENV.fetch('DATABASE_URL', 'sqlite://db/new_appointments.db')
 
 module AppointmentService
   class API < Sinatra::Base
     # Configure thread-safe database connection
-    DB = Sequel.connect('sqlite://db/new_appointments.db', 
+    DB = Sequel.connect(DATABASE_URL, 
       max_connections: 10, 
       pool_timeout: 10
     )
@@ -63,6 +64,11 @@ module AppointmentService
         status 500
         { message: "Terjadi kesalahan: #{e.message}" }.to_json
       end
+    end
+
+    get '/health' do
+      content_type :json
+      { status: 'ok', service: 'appointment-service' }.to_json
     end
     
 

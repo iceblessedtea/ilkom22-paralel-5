@@ -4,7 +4,7 @@ Roadmap ini memetakan langkah menuju kondisi _final_ project (lihat kriteria di 
 
 ## Phase 1: Struktur dan Dokumentasi
 
-Status: sedang dikerjakan.
+Status: selesai.
 
 - [x] Merapikan struktur folder.
 - [x] Memisahkan folder aktif dan legacy.
@@ -12,15 +12,15 @@ Status: sedang dikerjakan.
 - [x] Membuat dokumentasi arsitektur.
 - [x] Membuat dokumentasi cara menjalankan project.
 - [x] Menyiapkan folder observability.
-- [ ] Melengkapi dokumentasi environment dan API reference.
+- [x] Melengkapi dokumentasi environment dan API reference.
 
 ## Phase 2: Konfigurasi Runtime
 
-- [ ] Mengganti URL hardcoded antar-service menjadi environment variable.
-- [ ] Menyediakan `.env.example` yang konsisten (backend & frontend).
-- [ ] Membuat mode Docker dan non-Docker sama-sama valid.
-- [ ] Memastikan setiap service bisa dijalankan sendiri.
-- [ ] Menyediakan skrip start lokal lintas platform (`start-local.ps1` dan `start-local.sh`).
+- [x] Mengganti URL hardcoded antar-service menjadi environment variable.
+- [x] Menyediakan `.env.example` yang konsisten (backend & frontend).
+- [x] Membuat mode Docker dan non-Docker sama-sama valid.
+- [x] Memastikan setiap service bisa dijalankan sendiri.
+- [x] Menyediakan skrip start lokal lintas platform (`start-local.ps1` dan `start-local.sh`).
 
 ## Phase 3: OpenTelemetry
 

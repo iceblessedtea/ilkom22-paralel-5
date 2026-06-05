@@ -54,10 +54,10 @@ Manfaatnya:
 Beberapa URL service di kode saat ini masih memakai nama container Docker, seperti:
 
 ```text
-http://patients:7860
-http://doctors:7861
-http://appointments:7862
-http://medical_records:7863
+http://patient-service:7860
+http://doctor-service:7861
+http://appointment-service:7862
+http://medical-record-service:7863
 ```
 
 Agar bisa berjalan tanpa Docker, URL tersebut sebaiknya dibuat configurable lewat environment variable.
@@ -72,8 +72,8 @@ DOCTOR_URL = ENV.fetch("DOCTOR_URL", "http://localhost:7861")
 Saat Docker:
 
 ```text
-PATIENT_URL=http://patients:7860
-DOCTOR_URL=http://doctors:7861
+PATIENT_URL=http://patient-service:7860
+DOCTOR_URL=http://doctor-service:7861
 ```
 
 Saat tanpa Docker:

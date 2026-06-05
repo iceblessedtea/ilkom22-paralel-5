@@ -8,14 +8,19 @@ require 'httpx'
 
 module PatientService
   class API < Sinatra::Base
-    DB = Sequel.connect('sqlite://db/patients.db')
-    REKAM_MEDIK_SERVICE_URL = "http://medical_records:7863" # URL Service Rekam Medik
-    DOCTOR_SERVICE_URL = "http://doctors:7861"
+    DB = Sequel.connect(ENV.fetch('DATABASE_URL', 'sqlite://db/patients.db'))
+    MEDICAL_RECORD_URL = ENV.fetch('MEDICAL_RECORD_URL', 'http://localhost:7863')
+    DOCTOR_URL = ENV.fetch('DOCTOR_URL', 'http://localhost:7861')
 
     # Endpoint root untuk memastikan service berjalan
     get "/" do
       content_type :json
       { message: "Service pasien berjalan dengan baik" }.to_json
+    end
+
+    get "/health" do
+      content_type :json
+      { status: 'ok', service: 'patient-service' }.to_json
     end
 
     # Mendapatkan semua data pasien
@@ -102,13 +107,25 @@ module PatientService
       end
     end
 
+    # Menghapus data pasien
+    delete '/patients/:id' do
+      deleted = DB[:patients].where(id: params['id'].to_i).delete
+
+      if deleted.positive?
+        status 200
+        { success: true, message: "Patient dengan ID #{params['id']} berhasil dihapus" }.to_json
+      else
+        halt 404, { error: "Patient dengan ID #{params['id']} tidak ditemukan" }.to_json
+      end
+    end
+
     # Mendapatkan data pasien dengan rekam medis
     get '/patients/:id/records' do
       patient = DB[:patients].where(id: params['id'].to_i).first
 
       if patient
         begin
-          uri = URI("#{REKAM_MEDIK_SERVICE_URL}/medical_records/#{patient[:id]}")
+          uri = URI("#{MEDICAL_RECORD_URL}/medical_records/#{patient[:id]}")
           response = Net::HTTP.get_response(uri)
 
           if response.is_a?(Net::HTTPSuccess)
@@ -134,27 +151,31 @@ module PatientService
       end
     end
 
+    get '/patients/:id/medical-records' do
+      call env.merge('PATH_INFO' => "/patients/#{params['id']}/records")
+    end
+
     get "/schedules" do
       begin
         # Ambil jadwal dari DoctorService
-        uri = URI("#{DOCTOR_SERVICE_URL}/schedules")
+        uri = URI("#{DOCTOR_URL}/schedules")
         response = Net::HTTP.get_response(uri)
     
         if response.is_a?(Net::HTTPSuccess)
           schedules = JSON.parse(response.body)
           detailed_schedules = schedules.map do |schedule|
             # Ambil informasi dokter berdasarkan doctor_id
-            doctor_uri = URI("#{DOCTOR_SERVICE_URL}/doctors/#{schedule['doctor_id']}")
+            doctor_uri = URI("#{DOCTOR_URL}/doctors/#{schedule['doctor_id']}")
             doctor_response = Net::HTTP.get_response(doctor_uri)
             doctor = JSON.parse(doctor_response.body) if doctor_response.is_a?(Net::HTTPSuccess)
     
             # Ambil informasi timeslot berdasarkan timeslot_id
-            timeslot_uri = URI("#{DOCTOR_SERVICE_URL}/timeslots/#{schedule['timeslot_id']}")
+            timeslot_uri = URI("#{DOCTOR_URL}/timeslots/#{schedule['timeslot_id']}")
             timeslot_response = Net::HTTP.get_response(timeslot_uri)
             timeslot = JSON.parse(timeslot_response.body) if timeslot_response.is_a?(Net::HTTPSuccess)
     
             # Ambil informasi ruangan berdasarkan room_id
-            room_uri = URI("#{DOCTOR_SERVICE_URL}/rooms/#{schedule['room_id']}")
+            room_uri = URI("#{DOCTOR_URL}/rooms/#{schedule['room_id']}")
             room_response = Net::HTTP.get_response(room_uri)
             room = JSON.parse(room_response.body) if room_response.is_a?(Net::HTTPSuccess)
     
