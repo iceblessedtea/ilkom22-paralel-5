@@ -19,10 +19,10 @@ if ($WithOtel) {
 }
 
 $services = @(
-  @{ Name = "patient-service"; Port = 7860; OtelName = "patient-service" },
-  @{ Name = "doctor-service"; Port = 7861; OtelName = "doctor-service" },
-  @{ Name = "appointment-service"; Port = 7862; OtelName = "appointment-service" },
-  @{ Name = "medical-record-service"; Port = 7863; OtelName = "medical-record-service" }
+  @{ Name = "patient-service"; Port = 7860; Database = "patient_service" },
+  @{ Name = "doctor-service"; Port = 7861; Database = "doctor_service" },
+  @{ Name = "appointment-service"; Port = 7862; Database = "appointment_service" },
+  @{ Name = "medical-record-service"; Port = 7863; Database = "medical_record_service" }
 )
 
 foreach ($service in $services) {
@@ -32,11 +32,13 @@ foreach ($service in $services) {
 `$env:DOCTOR_URL='$env:DOCTOR_URL'
 `$env:APPOINTMENT_URL='$env:APPOINTMENT_URL'
 `$env:MEDICAL_RECORD_URL='$env:MEDICAL_RECORD_URL'
+`$env:DATABASE_URL='postgres://healthcare:healthcare@localhost:5432/$($service.Database)'
 `$env:OTEL_ENABLED='$env:OTEL_ENABLED'
-`$env:OTEL_SERVICE_NAME='$($service.OtelName)'
+`$env:OTEL_SERVICE_NAME='$($service.Name)'
 `$env:OTEL_EXPORTER_OTLP_ENDPOINT='$env:OTEL_EXPORTER_OTLP_ENDPOINT'
 Set-Location '$servicePath'
 bundle install
+bundle exec ruby db/migrate.rb
 bundle exec rackup --host 0.0.0.0 --port $($service.Port)
 "@
 

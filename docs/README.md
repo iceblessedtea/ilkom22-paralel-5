@@ -19,13 +19,14 @@ Project ini adalah **Sistem Layanan Kesehatan (Healthcare)** sederhana yang diba
 4. [Architecture](ARCHITECTURE.md) - batas service, alur antar-service, dan diagram.
 5. [Environment](ENVIRONMENT.md) - daftar environment variable dan contoh `.env`.
 6. [Running Guide](RUNNING_GUIDE.md) - cara menjalankan Docker dan non-Docker.
-7. [API Reference](API_REFERENCE.md) - daftar endpoint tiap service.
-8. [Observability](OBSERVABILITY.md) - setup dan verifikasi OpenTelemetry.
-9. [Trace Flow Example](TRACE_FLOW_EXAMPLE.md) - contoh alur trace antar-service.
-10. [Testing dan Quality](TESTING.md) - RSpec, Vitest, lint, smoke test, dan CI.
-11. [Roadmap](ROADMAP.md) - fase pengembangan dan definition of done.
-12. [Frontend Design](FRONTEND_DESIGN.md) - design system dan pola integrasi frontend ke backend.
-13. [Technical Decisions](TECHNICAL_DECISIONS.md) - catatan keputusan teknis.
+7. [Deployment Guide](DEPLOYMENT.md) - deployment, update, rollback, dan checklist production.
+8. [API Reference](API_REFERENCE.md) - daftar endpoint tiap service.
+9. [Observability](OBSERVABILITY.md) - setup dan verifikasi OpenTelemetry.
+10. [Trace Flow Example](TRACE_FLOW_EXAMPLE.md) - contoh alur trace antar-service.
+11. [Testing dan Quality](TESTING.md) - RSpec, Vitest, lint, smoke test, dan CI.
+12. [Roadmap](ROADMAP.md) - fase pengembangan dan definition of done.
+13. [Frontend Design](FRONTEND_DESIGN.md) - design system dan pola integrasi frontend ke backend.
+14. [Technical Decisions](TECHNICAL_DECISIONS.md) - catatan keputusan teknis.
 
 ## Konvensi Dokumentasi
 
