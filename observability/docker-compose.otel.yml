@@ -1,0 +1,43 @@
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./../observability/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    restart: unless-stopped
+
+  doctors:
+    environment:
+      - OTEL_ENABLED=true
+      - OTEL_SERVICE_NAME=doctor-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    depends_on:
+      - otel-collector
+
+  patients:
+    environment:
+      - OTEL_ENABLED=true
+      - OTEL_SERVICE_NAME=patient-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    depends_on:
+      - otel-collector
+
+  appointments:
+    environment:
+      - OTEL_ENABLED=true
+      - OTEL_SERVICE_NAME=appointment-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    depends_on:
+      - otel-collector
+
+  medical_records:
+    environment:
+      - OTEL_ENABLED=true
+      - OTEL_SERVICE_NAME=medical-record-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    depends_on:
+      - otel-collector
+
