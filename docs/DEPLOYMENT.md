@@ -133,3 +133,5 @@ Migrasi database tidak otomatis di-downgrade saat rollback aplikasi. Jika releas
 - Endpoint health dipantau.
 - Log dan trace dikirim ke penyimpanan terpusat.
 - Release menggunakan tag atau commit immutable.
+
+Prosedur operasional tersedia di [PostgreSQL Backup and Restore](DATABASE_BACKUP.md).

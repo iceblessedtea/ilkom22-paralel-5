@@ -214,6 +214,14 @@ Checklist sebelum production:
 
 Panduan deployment lengkap, rollback, dan health verification tersedia di [Deployment Guide](docs/DEPLOYMENT.md).
 
+Backup manual:
+
+```powershell
+services\scripts\backup-databases.ps1
+```
+
+Panduan restore tersedia di [PostgreSQL Backup and Restore](docs/DATABASE_BACKUP.md).
+
 ## Project Structure
 
 ```text
@@ -289,10 +297,11 @@ docker compose down -v
 3. [Environment](docs/ENVIRONMENT.md)
 4. [Running Guide](docs/RUNNING_GUIDE.md)
 5. [Deployment Guide](docs/DEPLOYMENT.md)
-6. [API Reference](docs/API_REFERENCE.md)
-7. [Observability](docs/OBSERVABILITY.md)
-8. [Testing and Quality](docs/TESTING.md)
-9. [Roadmap](docs/ROADMAP.md)
+6. [PostgreSQL Backup and Restore](docs/DATABASE_BACKUP.md)
+7. [API Reference](docs/API_REFERENCE.md)
+8. [Observability](docs/OBSERVABILITY.md)
+9. [Testing and Quality](docs/TESTING.md)
+10. [Roadmap](docs/ROADMAP.md)
 
 ## Roadmap
 

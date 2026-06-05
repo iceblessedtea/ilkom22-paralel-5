@@ -1,0 +1,6 @@
+.env
+**/.env
+backups/
+services/backups/
+services/*-service/spec/tmp/
+*.log
