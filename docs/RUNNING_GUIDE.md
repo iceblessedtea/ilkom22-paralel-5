@@ -1,0 +1,139 @@
+# Running Guide
+
+Project ini dirancang agar dapat dijalankan dengan Docker maupun tanpa Docker.
+
+## Prasyarat
+
+| Mode                  | Kebutuhan                                          |
+| --------------------- | -------------------------------------------------- |
+| Docker                | Docker Desktop / Docker Engine + Docker Compose v2 |
+| Non-Docker (backend)  | Ruby 3.2+, Bundler                                 |
+| Non-Docker (frontend) | Node.js 18+ dan npm                                |
+| Observability (lokal) | Binary `otelcol` (opsional, jika tanpa Docker)     |
+
+Semua perintah disediakan untuk **PowerShell (Windows)** dan **Bash (macOS/Linux)**.
+
+## 1. Setup Environment
+
+Salin file contoh environment sebelum menjalankan (lihat [Environment](ENVIRONMENT.md)):
+
+PowerShell:
+
+```powershell
+Copy-Item services/patient-service/.env.example services/patient-service/.env
+Copy-Item frontend/.env.example frontend/.env
+```
+
+Bash:
+
+```bash
+cp services/patient-service/.env.example services/patient-service/.env
+cp frontend/.env.example frontend/.env
+```
+
+Ulangi untuk tiap service yang ingin dijalankan tanpa Docker.
+
+## 2. Menjalankan dengan Docker
+
+Jalankan semua backend services:
+
+```bash
+cd services
+docker compose up --build
+```
+
+Jalankan backend services + OpenTelemetry Collector:
+
+```bash
+cd services
+docker compose -f docker-compose.yml -f ../observability/docker-compose.otel.yml up --build
+```
+
+Endpoint utama:
+
+```text
+Patient Service:        http://localhost:7860
+Doctor Service:         http://localhost:7861
+Appointment Service:    http://localhost:7862
+Medical Record Service: http://localhost:7863
+API Gateway:            http://localhost
+```
+
+## 3. Menjalankan tanpa Docker (Backend)
+
+Pastikan Ruby dan Bundler tersedia. Jalankan tiap service di terminal terpisah.
+
+PowerShell:
+
+```powershell
+cd services/patient-service
+bundle install
+bundle exec rackup --host 0.0.0.0 --port 7860
+```
+
+Bash:
+
+```bash
+cd services/patient-service
+bundle install
+bundle exec rackup --host 0.0.0.0 --port 7860
+```
+
+Lakukan hal yang sama untuk service lain dengan port masing-masing:
+
+```text
+doctor-service          -> 7861
+appointment-service     -> 7862
+medical-record-service  -> 7863
+```
+
+Atau gunakan helper PowerShell:
+
+```powershell
+services/scripts/start-local.ps1
+```
+
+Dengan OpenTelemetry:
+
+```powershell
+services/scripts/start-local.ps1 -WithOtel
+```
+
+> Untuk macOS/Linux, disarankan menyediakan skrip setara `services/scripts/start-local.sh` (lihat [Roadmap](ROADMAP.md) Phase 2).
+
+## 4. Menjalankan Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend membaca base URL backend dari `VITE_API_BASE_URL` (lihat [Environment](ENVIRONMENT.md)). Default development mengarah ke Appointment Service; saat memakai Docker + Gateway, set ke `http://localhost`.
+
+## 5. Menjalankan Test
+
+Backend (per service):
+
+```bash
+cd services/patient-service
+bundle exec rspec
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm test
+```
+
+## Troubleshooting
+
+- **Port sudah dipakai**: ubah `PORT` di `.env` service terkait, atau hentikan proses yang memakai port.
+- **Service tidak bisa memanggil service lain (non-Docker)**: pastikan variabel `*_URL` mengarah ke `http://localhost:<port>`, bukan nama container Docker.
+- **Frontend gagal fetch (CORS)**: gunakan API Gateway (mode Docker) atau aktifkan CORS di service backend.
+- **Trace tidak muncul**: pastikan `OTEL_ENABLED=true` dan `OTEL_EXPORTER_OTLP_ENDPOINT` mengarah ke collector yang aktif.
+
+## Catatan
+
+Jika Ruby/Bundler belum tersedia di mesin lokal, mode Docker adalah opsi tercepat untuk menjalankan seluruh sistem.
