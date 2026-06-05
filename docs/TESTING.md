@@ -18,7 +18,7 @@ Bash:
 bash services/scripts/run-rspec.sh
 ```
 
-Test memakai SQLite terisolasi di `spec/tmp`. Database development tidak diubah.
+Test backend memakai PostgreSQL terisolasi melalui `TEST_DATABASE_URL`. GitHub Actions menyediakan container PostgreSQL terpisah untuk setiap job service.
 
 Coverage awal:
 

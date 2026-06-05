@@ -22,7 +22,7 @@ Frontend mengakses backend melalui base URL yang dikonfigurasi via environment v
 - Sinatra
 - Rack / Rackup
 - Sequel (ORM)
-- SQLite
+- PostgreSQL 16
 - HTTPX dan Net::HTTP untuk komunikasi antar-service
 - Puma sebagai app server (digunakan pada Appointment Service; disarankan diseragamkan ke semua service)
 - RSpec + Rack::Test (untuk unit test & request spec, lihat [Roadmap](ROADMAP.md) Phase 5)
@@ -45,21 +45,9 @@ services/
 
 ## Database
 
-Project saat ini memakai SQLite per service.
+Project memakai PostgreSQL dengan database terpisah per service. Skema dikelola oleh migrasi Sequel pada folder `db/migrations`, dan startup container menjalankan migrasi secara otomatis.
 
-**Keuntungan**
-
-- Ringan untuk development.
-- Mudah dipakai untuk demo.
-- Tidak wajib menjalankan database server terpisah.
-
-**Keterbatasan**
-
-- Kurang ideal untuk concurrent write skala besar.
-- Migrasi dan backup perlu dirapikan.
-- Untuk produksi, lebih baik dipertimbangkan PostgreSQL atau MySQL.
-
-Keputusan database untuk produksi dibahas di [Technical Decisions](TECHNICAL_DECISIONS.md) dan [Roadmap](ROADMAP.md) Phase 6.
+Backup dan restore menggunakan `pg_dump` serta `psql`. Lihat [PostgreSQL Backup and Restore](DATABASE_BACKUP.md).
 
 ## Container dan Runtime
 

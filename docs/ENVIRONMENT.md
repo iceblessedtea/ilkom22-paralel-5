@@ -10,7 +10,9 @@ Project memakai environment variable sebagai sumber konfigurasi utama, agar mode
 | ----------------------------- | -------------------------- | -------------------------------------------------------- |
 | `PORT`                        | sesuai service (7860-7863) | Port tempat service berjalan                             |
 | `RACK_ENV`                    | `development`              | Environment Rack (`development` / `production` / `test`) |
-| `DATABASE_URL`                | sesuai service             | Lokasi database SQLite service                           |
+| `DATABASE_URL`                | PostgreSQL per service     | Connection URL database milik service                    |
+| `POSTGRES_USER`               | `healthcare`               | User PostgreSQL untuk Docker Compose                      |
+| `POSTGRES_PASSWORD`           | `healthcare`               | Password PostgreSQL; wajib diganti di production          |
 | `PATIENT_URL`                 | `http://localhost:7860`    | Base URL Patient Service                                 |
 | `DOCTOR_URL`                  | `http://localhost:7861`    | Base URL Doctor Service                                  |
 | `APPOINTMENT_URL`             | `http://localhost:7862`    | Base URL Appointment Service                             |
@@ -24,7 +26,7 @@ Project memakai environment variable sebagai sumber konfigurasi utama, agar mode
 ```text
 PORT=7862
 RACK_ENV=development
-DATABASE_URL=sqlite://db/new_appointments.db
+DATABASE_URL=postgres://healthcare:healthcare@localhost:5432/appointment_service
 PATIENT_URL=http://localhost:7860
 DOCTOR_URL=http://localhost:7861
 APPOINTMENT_URL=http://localhost:7862
@@ -33,6 +35,8 @@ OTEL_ENABLED=false
 OTEL_SERVICE_NAME=appointment-service
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
 ```
+
+PostgreSQL lokal harus memiliki database `patient_service`, `doctor_service`, `appointment_service`, dan `medical_record_service`. Docker Compose membuat database tersebut otomatis.
 
 ### Nilai untuk mode Docker
 

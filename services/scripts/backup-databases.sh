@@ -5,6 +5,7 @@ SERVICES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUTPUT_ROOT="${1:-${SERVICES_DIR}/backups}"
 TIMESTAMP="$(date -u +%Y%m%d-%H%M%S)"
 BACKUP_DIR="${OUTPUT_ROOT}/${TIMESTAMP}"
+POSTGRES_USER="${POSTGRES_USER:-healthcare}"
 DATABASES=(
   patient_service
   doctor_service
@@ -21,7 +22,7 @@ for database in "${DATABASES[@]}"; do
   echo "==> Backing up ${database}"
 
   docker compose exec -T postgres pg_dump \
-    --username healthcare \
+    --username "${POSTGRES_USER}" \
     --dbname "${database}" \
     --clean \
     --if-exists \

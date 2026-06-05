@@ -305,7 +305,7 @@ docker compose down -v
 
 ## Roadmap
 
-Phase 1 sampai Phase 5 telah selesai. Phase 6 mencakup standardisasi migrasi, PostgreSQL, deployment guide, serta backup dan restore database. Status rinci tersedia di [Roadmap](docs/ROADMAP.md).
+Phase 1 sampai Phase 6 telah selesai: migrasi terstruktur, PostgreSQL, deployment guide, serta backup dan restore database sudah tersedia. Status rinci ada di [Roadmap](docs/ROADMAP.md).
 
 ---
 

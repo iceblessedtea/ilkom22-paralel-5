@@ -9,6 +9,7 @@ $ErrorActionPreference = "Stop"
 
 $servicesDir = Resolve-Path (Join-Path $PSScriptRoot "..")
 $resolvedBackup = Resolve-Path $BackupDirectory
+$postgresUser = if ($env:POSTGRES_USER) { $env:POSTGRES_USER } else { "healthcare" }
 $databases = if ($Database -eq "all") {
   @("patient_service", "doctor_service", "appointment_service", "medical_record_service")
 } else {
@@ -34,7 +35,7 @@ try {
     }
 
     docker compose exec -T postgres psql `
-      --username healthcare `
+      --username $postgresUser `
       --dbname $databaseName `
       --set ON_ERROR_STOP=1 `
       --file $containerFile

@@ -9,6 +9,7 @@ fi
 SERVICES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKUP_DIR="$(cd "$1" && pwd)"
 DATABASE="${2:-all}"
+POSTGRES_USER="${POSTGRES_USER:-healthcare}"
 ALL_DATABASES=(
   patient_service
   doctor_service
@@ -40,7 +41,7 @@ for database in "${DATABASES[@]}"; do
   echo "==> Restoring ${database}"
   docker compose cp "${source_file}" "postgres:${container_file}"
   docker compose exec -T postgres psql \
-    --username healthcare \
+    --username "${POSTGRES_USER}" \
     --dbname "${database}" \
     --set ON_ERROR_STOP=1 \
     --file "${container_file}"

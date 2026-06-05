@@ -7,7 +7,7 @@ Project ini dirancang agar dapat dijalankan dengan Docker maupun tanpa Docker.
 | Mode                  | Kebutuhan                                          |
 | --------------------- | -------------------------------------------------- |
 | Docker                | Docker Desktop / Docker Engine + Docker Compose v2 |
-| Non-Docker (backend)  | Ruby 3.2+, Bundler                                 |
+| Non-Docker (backend)  | Ruby 3.3, Bundler, PostgreSQL 16                   |
 | Non-Docker (frontend) | Node.js 18+ dan npm                                |
 | Observability (lokal) | Binary `otelcol` (opsional, jika tanpa Docker)     |
 
@@ -67,13 +67,23 @@ API Gateway:            http://localhost
 
 ## 3. Menjalankan tanpa Docker (Backend)
 
-Pastikan Ruby dan Bundler tersedia. Jalankan tiap service di terminal terpisah.
+Pastikan Ruby, Bundler, dan PostgreSQL tersedia. Buat database berikut sebelum menjalankan service:
+
+```text
+patient_service
+doctor_service
+appointment_service
+medical_record_service
+```
+
+Jalankan tiap service di terminal terpisah. Migrasi harus dijalankan sebelum Rack:
 
 PowerShell:
 
 ```powershell
 cd services/patient-service
 bundle install
+bundle exec ruby db/migrate.rb
 bundle exec rackup --host 0.0.0.0 --port 7860
 ```
 
@@ -82,6 +92,7 @@ Bash:
 ```bash
 cd services/patient-service
 bundle install
+bundle exec ruby db/migrate.rb
 bundle exec rackup --host 0.0.0.0 --port 7860
 ```
 
@@ -168,6 +179,7 @@ Panduan lengkap tersedia di [Testing dan Quality](TESTING.md).
 - **Service tidak bisa memanggil service lain (non-Docker)**: pastikan variabel `*_URL` mengarah ke `http://localhost:<port>`, bukan nama container Docker.
 - **Frontend gagal fetch (CORS)**: pastikan backend dijalankan melalui API Gateway dan `VITE_API_BASE_URL` mengarah ke host gateway.
 - **Trace tidak muncul**: pastikan `OTEL_ENABLED=true` dan `OTEL_EXPORTER_OTLP_ENDPOINT` mengarah ke collector yang aktif.
+- **Koneksi PostgreSQL gagal**: pastikan database sudah dibuat dan `DATABASE_URL` memakai host, user, password, serta nama database yang benar.
 
 ## Catatan
 

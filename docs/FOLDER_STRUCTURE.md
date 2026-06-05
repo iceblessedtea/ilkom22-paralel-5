@@ -46,6 +46,7 @@ services/
   doctor-service/
   medical-record-service/
   patient-service/
+  postgres/
   scripts/
   docker-compose.yml
 ```
@@ -54,11 +55,10 @@ Struktur umum tiap service:
 
 ```text
 <service>/
-  app.rb            # definisi route Sinatra
+  app/api.rb        # definisi route Sinatra
   config.ru         # entry point Rack
   Gemfile
-  db/               # migrasi & file SQLite
-  lib/              # helper, klien HTTP antar-service
+  db/               # runner dan migrasi Sequel
   spec/             # RSpec (unit & request spec)
   .env.example      # contoh environment variable service
 ```

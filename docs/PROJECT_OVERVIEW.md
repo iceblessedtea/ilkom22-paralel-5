@@ -14,7 +14,7 @@ Project ini adalah sistem layanan kesehatan sederhana yang dikembangkan dengan p
 
 ### Backend
 
-Empat service domain (Patient, Doctor, Appointment, Medical Record) berbasis Ruby + Sinatra, plus API Gateway (Nginx) opsional. Setiap service memiliki database SQLite sendiri dan saling berkomunikasi via HTTP.
+Empat service domain (Patient, Doctor, Appointment, Medical Record) berbasis Ruby + Sinatra, plus API Gateway Nginx. Setiap service memiliki database PostgreSQL sendiri dan saling berkomunikasi via HTTP.
 
 ### Frontend
 
@@ -37,13 +37,13 @@ Project ini bukan monolith penuh dan juga belum microservice produksi yang matan
 
 Project dianggap final ketika seluruh kriteria berikut terpenuhi:
 
-- [ ] Semua service backend bisa dijalankan via Docker **dan** non-Docker tanpa perubahan kode.
-- [ ] Tidak ada URL antar-service yang hardcoded; semua via environment variable.
-- [ ] Tersedia `.env.example` yang konsisten untuk backend dan frontend.
-- [ ] Frontend terhubung ke seluruh endpoint backend dan menangani error.
-- [ ] OpenTelemetry aktif di semua service dan trace antar-service terlihat di collector.
-- [ ] Tersedia unit test dan request spec untuk service utama, plus test frontend dasar.
-- [ ] Dokumentasi (overview, arsitektur, environment, running guide, API reference) lengkap dan akurat.
-- [ ] Tersedia panduan deployment dan strategi database untuk produksi.
+- [x] Semua service backend bisa dijalankan via Docker **dan** non-Docker tanpa perubahan kode.
+- [x] Tidak ada URL antar-service yang hardcoded; semua via environment variable.
+- [x] Tersedia `.env.example` yang konsisten untuk backend dan frontend.
+- [x] Frontend terhubung ke seluruh endpoint backend dan menangani error.
+- [x] OpenTelemetry tersedia di semua service dan trace antar-service dapat dikirim ke collector.
+- [x] Tersedia unit test dan request spec untuk service utama, plus test frontend dasar.
+- [x] Dokumentasi (overview, arsitektur, environment, running guide, API reference) lengkap dan akurat.
+- [x] Tersedia panduan deployment dan strategi database PostgreSQL.
 
 Lihat [Roadmap](ROADMAP.md) untuk pemetaan kriteria ini ke tiap fase.

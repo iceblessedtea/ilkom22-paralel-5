@@ -33,19 +33,21 @@ Dokumen ini mencatat keputusan teknis penting (Architecture Decision Records). S
 - Struktur project perlu dibuat lebih disiplin secara manual.
 - Testing, config, dan observability perlu ditambahkan eksplisit.
 
-## ADR-3: SQLite Untuk Development
+## ADR-3: PostgreSQL Per Domain
 
-**Keputusan:** SQLite tetap dipakai untuk development dan demo.
+**Keputusan:** Runtime development, test, dan deployment memakai PostgreSQL. Setiap service memiliki database sendiri pada instance PostgreSQL yang sama untuk mode Docker lokal.
 
 **Alasan:**
 
-- Ringan.
-- Mudah dijalankan.
-- Tidak perlu database server tambahan.
+- Perilaku database konsisten antara development, CI, dan deployment.
+- Mendukung concurrent connection dan operasi yang lebih sesuai untuk service HTTP.
+- Tetap menjaga ownership data per domain.
 
 **Konsekuensi:**
 
-- Untuk produksi, perlu evaluasi database yang lebih kuat seperti PostgreSQL (lihat [Roadmap](ROADMAP.md) Phase 6).
+- Docker Compose memerlukan container PostgreSQL.
+- Migrasi, backup, restore, dan kredensial harus dikelola secara eksplisit.
+- Production dapat memindahkan database ke managed PostgreSQL tanpa mengubah kode selama `DATABASE_URL` diperbarui.
 
 ## ADR-4: OpenTelemetry Sebagai Kebaruan
 

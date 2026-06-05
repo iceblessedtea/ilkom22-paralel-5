@@ -7,6 +7,7 @@ $ErrorActionPreference = "Stop"
 $servicesDir = Resolve-Path (Join-Path $PSScriptRoot "..")
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $backupDir = Join-Path $OutputDirectory $timestamp
+$postgresUser = if ($env:POSTGRES_USER) { $env:POSTGRES_USER } else { "healthcare" }
 $databases = @(
   "patient_service",
   "doctor_service",
@@ -26,7 +27,7 @@ try {
 
     Write-Host "==> Backing up $database"
     docker compose exec -T postgres pg_dump `
-      --username healthcare `
+      --username $postgresUser `
       --dbname $database `
       --clean `
       --if-exists `

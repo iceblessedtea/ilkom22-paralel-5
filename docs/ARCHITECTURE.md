@@ -15,10 +15,10 @@ flowchart LR
   Patient --> Record
   Doctor --> Appointment
 
-  Patient --> PatientDB["patients.db"]
-  Doctor --> DoctorDB["doctors.db"]
-  Appointment --> AppointmentDB["appointments.db"]
-  Record --> RecordDB["medical_records.db"]
+  Patient --> PatientDB[("patient_service")]
+  Doctor --> DoctorDB[("doctor_service")]
+  Appointment --> AppointmentDB[("appointment_service")]
+  Record --> RecordDB[("medical_record_service")]
 
   Patient -. traces .-> OTel["OpenTelemetry Collector"]
   Doctor -. traces .-> OTel
@@ -86,6 +86,8 @@ Daftar lengkap environment variable ada di [Environment](ENVIRONMENT.md).
 
 ## Catatan Arsitektur Saat Ini
 
-- Sebagian URL antar-service masih hardcoded dengan nama container Docker dan perlu dipindahkan ke environment variable (lihat [Roadmap](ROADMAP.md) Phase 2).
+- PostgreSQL berjalan sebagai satu instance pada Docker Compose dengan database terpisah per domain.
+- Migrasi Sequel dijalankan otomatis sebelum masing-masing service mulai menerima traffic.
+- URL antar-service dan koneksi database dikonfigurasi melalui environment variable.
 - Belum ada mekanisme retry/timeout standar pada pemanggilan HTTP antar-service; ini direkomendasikan untuk ketahanan (resilience).
-- Tracing OpenTelemetry sedang diintegrasikan agar alur antar-service di atas dapat diamati secara end-to-end.
+- Tracing OpenTelemetry tersedia agar alur antar-service dapat diamati secara end-to-end.

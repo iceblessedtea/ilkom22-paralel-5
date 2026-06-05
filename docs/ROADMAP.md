@@ -58,10 +58,12 @@ Status: selesai.
 
 ## Phase 6: Database dan Deployment
 
-- [ ] Merapikan migrasi database per service.
-- [ ] Menentukan apakah SQLite tetap dipakai atau migrasi ke PostgreSQL.
-- [ ] Menyiapkan deployment guide.
-- [ ] Menyiapkan backup/restore database.
+Status: selesai.
+
+- [x] Merapikan migrasi database per service.
+- [x] Migrasi dari SQLite ke PostgreSQL.
+- [x] Menyiapkan deployment guide.
+- [x] Menyiapkan backup/restore database.
 
 ## Definition of Done
 
