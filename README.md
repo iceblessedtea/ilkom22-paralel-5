@@ -40,6 +40,7 @@ Project ini cocok untuk:
 - [Testing](#testing)
 - [Troubleshooting](#troubleshooting)
 - [Documentation](#documentation)
+- [Screenshot Evidence](#screenshot-evidence)
 - [Roadmap](#roadmap)
 
 ## Architecture
@@ -302,6 +303,49 @@ docker compose down -v
 8. [Observability](docs/OBSERVABILITY.md)
 9. [Testing and Quality](docs/TESTING.md)
 10. [Roadmap](docs/ROADMAP.md)
+
+## Screenshot Evidence
+
+Bukti screenshot runtime aplikasi console tersimpan di folder [docs/screenshots/](docs/screenshots). Jika ingin memperbarui bukti dokumentasi, ambil screenshot baru dengan nama file yang sama.
+
+### 1. Tab Pasien (Default View)
+![Dashboard Pasien](docs/screenshots/dashboard_patients.png)
+
+### 2. Tab Dokter
+![Dashboard Dokter](docs/screenshots/dashboard_doctors.png)
+
+### 3. Tab Janji Temu
+![Dashboard Janji Temu](docs/screenshots/dashboard_appointments.png)
+
+### 4. Tab Rekam Medis
+![Dashboard Rekam Medis](docs/screenshots/dashboard_medical_records.png)
+
+### Recommended Screenshots for Documentation
+
+Untuk pengembangan dokumen di masa depan, disarankan menyertakan screenshot berikut:
+1. **Jaeger Distributed Tracing**: Alur trace request untuk appointment/medical record melintasi beberapa service di Jaeger UI (`http://localhost:16686`).
+2. **Database Schema / Admin Panel**: Visualisasi skema relasional antar database PostgreSQL atau CLI output status migrasi Sequel.
+3. **Continuous Integration (GitHub Actions)**: Hasil build, linting, dan test suite yang berhasil lolos di GitHub Actions.
+
+### Memperbarui Screenshot Bukti Secara Otomatis
+
+Untuk memperbarui screenshot runtime secara otomatis dengan headless Chrome:
+1. Pastikan docker backend services dan frontend server sedang aktif:
+   ```powershell
+   # Terminal 1: Backend
+   cd services
+   docker compose up -d --build
+
+   # Terminal 2: Frontend
+   cd frontend
+   npm run dev
+   ```
+2. Jalankan script capture screenshots:
+   ```powershell
+   cd frontend
+   node take_screenshots.js
+   ```
+   Script ini akan secara otomatis menavigasi setiap tab aplikasi console, menunggu rendering data, dan menimpa file di `docs/screenshots/` dengan screenshot terbaru.
 
 ## Roadmap
 
