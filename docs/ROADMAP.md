@@ -1,6 +1,6 @@
 # Roadmap
 
-Roadmap ini memetakan langkah menuju kondisi _final_ project (lihat kriteria di [Project Overview](PROJECT_OVERVIEW.md#definisi-final--selesai)).
+Roadmap ini memetakan langkah menuju kondisi final project.
 
 ## Phase 1: Struktur dan Dokumentasi
 
@@ -16,37 +16,41 @@ Status: selesai.
 
 ## Phase 2: Konfigurasi Runtime
 
+Status: selesai.
+
 - [x] Mengganti URL hardcoded antar-service menjadi environment variable.
-- [x] Menyediakan `.env.example` yang konsisten (backend & frontend).
+- [x] Menyediakan `.env.example` yang konsisten untuk backend dan frontend.
 - [x] Membuat mode Docker dan non-Docker sama-sama valid.
 - [x] Memastikan setiap service bisa dijalankan sendiri.
 - [x] Menyediakan skrip start lokal lintas platform (`start-local.ps1` dan `start-local.sh`).
 
 ## Phase 3: OpenTelemetry
 
-- [ ] Menambahkan gem OpenTelemetry ke setiap backend service.
-- [ ] Mengaktifkan tracing untuk Sinatra/Rack.
-- [ ] Mengaktifkan tracing untuk HTTP client.
-- [ ] Mengirim trace ke OpenTelemetry Collector.
-- [ ] Membuat contoh trace flow antar-service.
-- [ ] (Opsional) Menambahkan backend visualisasi trace (Jaeger/Tempo).
+Status: selesai.
+
+- [x] Menambahkan gem OpenTelemetry ke setiap backend service.
+- [x] Mengaktifkan tracing untuk Sinatra/Rack.
+- [x] Mengaktifkan tracing untuk HTTP client.
+- [x] Mengirim trace ke OpenTelemetry Collector.
+- [x] Membuat contoh trace flow antar-service.
+- [x] Menambahkan backend visualisasi trace Jaeger.
 
 ## Phase 4: API dan Integrasi Frontend
 
 - [ ] Menyusun ulang endpoint agar konsisten.
-- [ ] Menambahkan dokumentasi API ([API Reference](API_REFERENCE.md)).
+- [ ] Menambahkan dokumentasi API.
 - [ ] Menghubungkan frontend ke backend services via `VITE_API_BASE_URL`.
 - [ ] Menambahkan error handling dan loading state pada frontend.
-- [ ] Menyamakan strategi CORS / penggunaan API Gateway.
+- [ ] Menyamakan strategi CORS atau penggunaan API Gateway.
 
 ## Phase 5: Testing dan Quality
 
-- [ ] Menambahkan unit test (RSpec) untuk service utama.
+- [ ] Menambahkan unit test RSpec untuk service utama.
 - [ ] Menambahkan request spec untuk endpoint penting.
-- [ ] Menambahkan test frontend (Vitest + React Testing Library).
-- [ ] Menambahkan linting yang konsisten (RuboCop + ESLint/Prettier).
+- [ ] Menambahkan test frontend dengan Vitest dan React Testing Library.
+- [ ] Menambahkan linting yang konsisten.
 - [ ] Menambahkan smoke test untuk mode Docker dan non-Docker.
-- [ ] (Opsional) Menyiapkan CI untuk menjalankan test otomatis.
+- [ ] Menyiapkan CI untuk menjalankan test otomatis.
 
 ## Phase 6: Database dan Deployment
 
@@ -55,6 +59,6 @@ Status: selesai.
 - [ ] Menyiapkan deployment guide.
 - [ ] Menyiapkan backup/restore database.
 
-## Definition of Done (Final)
+## Definition of Done
 
-Project dianggap selesai ketika seluruh checklist Phase 2–Phase 6 terpenuhi dan kriteria "Final / Selesai" di [Project Overview](PROJECT_OVERVIEW.md) tercentang semua, dengan dokumentasi yang akurat terhadap kondisi kode terkini.
+Project dianggap selesai ketika Phase 2 sampai Phase 6 terpenuhi, dokumentasi akurat terhadap kode terkini, dan aplikasi bisa dijalankan serta diverifikasi dalam mode Docker maupun non-Docker.

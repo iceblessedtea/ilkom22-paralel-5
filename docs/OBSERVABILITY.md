@@ -4,10 +4,11 @@ Observability adalah kebaruan utama yang disarankan untuk project ini.
 
 Teknologi yang digunakan:
 
-- OpenTelemetry (Ruby SDK).
+- OpenTelemetry Ruby SDK.
 - OpenTelemetry Collector.
 - OTLP exporter.
-- Instrumentasi Ruby untuk Sinatra/Rack dan HTTP client.
+- Instrumentasi Ruby untuk Sinatra/Rack dan Net::HTTP.
+- Jaeger untuk visualisasi trace saat Docker observability digunakan.
 
 ## Tujuan
 
@@ -41,17 +42,17 @@ observability/
 
 ## Environment Variable
 
-| Variabel                      | Keterangan                              |
-| ----------------------------- | --------------------------------------- |
-| `OTEL_ENABLED`                | `true` untuk mengaktifkan instrumentasi |
-| `OTEL_SERVICE_NAME`           | Nama service pada trace                 |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | Endpoint OTLP collector                 |
+| Variabel | Keterangan |
+| --- | --- |
+| `OTEL_ENABLED` | `true` untuk mengaktifkan instrumentasi |
+| `OTEL_SERVICE_NAME` | Nama service pada trace |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | Endpoint OTLP trace collector |
 
 Lihat [Environment](ENVIRONMENT.md) untuk daftar lengkap.
 
 ## Mode Docker
 
-Collector dijalankan sebagai container:
+Collector dan Jaeger dijalankan sebagai container:
 
 ```bash
 cd services
@@ -62,6 +63,12 @@ Endpoint OTLP di dalam jaringan Docker:
 
 ```text
 http://otel-collector:4318
+```
+
+Jaeger UI:
+
+```text
+http://localhost:16686
 ```
 
 ## Mode Tanpa Docker
@@ -78,9 +85,9 @@ Endpoint OTLP lokal:
 http://localhost:4318
 ```
 
-## Target Integrasi Berikutnya
+## Integrasi Service Ruby
 
-Setiap service perlu menambahkan dependency:
+Setiap service memakai dependency berikut:
 
 ```ruby
 gem "opentelemetry-sdk"
@@ -88,17 +95,24 @@ gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all"
 ```
 
-Lalu memuat konfigurasi:
+Setiap `config.ru` memuat konfigurasi bersama dan memasang Rack middleware tracing:
 
 ```ruby
-require_relative "../../observability/ruby/otel" if ENV.fetch("OTEL_ENABLED", "false") == "true"
+if ENV.fetch("OTEL_ENABLED", "false") == "true"
+  otel_config = File.expand_path("../../observability/ruby/otel", __dir__)
+  otel_config = "/observability/ruby/otel" unless File.exist?("#{otel_config}.rb")
+  require otel_config
+  use(*OpenTelemetry::Instrumentation::Rack::Instrumentation.instance.middleware_args)
+end
 ```
 
 ## Verifikasi
 
 1. Set `OTEL_ENABLED=true` di service yang ingin di-trace.
-2. Jalankan collector (mode Docker atau lokal).
-3. Lakukan request, misalnya `GET /appointments` (yang memanggil Patient & Doctor Service).
-4. Periksa log collector atau backend tracing (misalnya Jaeger/Tempo) untuk melihat trace lintas service yang saling terhubung dalam satu trace ID.
+2. Jalankan collector mode Docker atau lokal.
+3. Lakukan request, misalnya `GET /appointments`.
+4. Periksa log collector atau buka Jaeger UI untuk melihat trace lintas service dalam satu trace ID.
 
-> Untuk visualisasi trace, collector dapat diarahkan ke backend seperti Jaeger atau Grafana Tempo. Penambahan backend visualisasi direkomendasikan pada [Roadmap](ROADMAP.md) Phase 3.
+Contoh alur trace tersedia di [Trace Flow Example](TRACE_FLOW_EXAMPLE.md).
+
+Catatan: aplikasi Ruby memakai `OTEL_EXPORTER_OTLP_ENDPOINT` sebagai endpoint base. Exporter Ruby akan mengirim trace ke path OTLP traces yang sesuai.

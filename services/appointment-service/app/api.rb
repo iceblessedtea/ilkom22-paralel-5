@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'json'
-require 'httpx'
+require 'net/http'
+require 'uri'
 require 'sequel'
 require 'concurrent'
 require 'logger'
@@ -16,6 +17,8 @@ DATABASE_URL = ENV.fetch('DATABASE_URL', 'sqlite://db/new_appointments.db')
 
 module AppointmentService
   class API < Sinatra::Base
+    HttpResponse = Struct.new(:status, :body)
+
     # Configure thread-safe database connection
     DB = Sequel.connect(DATABASE_URL, 
       max_connections: 10, 
@@ -32,12 +35,17 @@ module AppointmentService
     # Synchronization primitive for critical sections
     MUTEX = Mutex.new
 
+    def self.http_get(url)
+      response = Net::HTTP.get_response(URI(url))
+      HttpResponse.new(response.code.to_i, response.body)
+    end
+
     # Root endpoint to check service health
     get '/' do
       begin
         # Ambil data dari service Patient dan Doctor
-        patient_response = HTTPX.get("#{PATIENT_URL}/patients")
-        doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors")
+        patient_response = self.class.http_get("#{PATIENT_URL}/patients")
+        doctor_response = self.class.http_get("#{DOCTOR_URL}/doctors")
     
         # Status masing-masing service dalam format JSON
         doctor_message = if doctor_response.status == 200
@@ -152,11 +160,11 @@ module AppointmentService
           Thread.new do
             semaphore.acquire
             begin
-              patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
-              doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
-              doctor_schedule_response = HTTPX.get("#{DOCTOR_URL}/schedules")
-              timeslot_response = HTTPX.get("#{DOCTOR_URL}/timeslots")
-              room_response = HTTPX.get("#{DOCTOR_URL}/rooms")
+              patient_response = self.class.http_get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
+              doctor_response = self.class.http_get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
+              doctor_schedule_response = self.class.http_get("#{DOCTOR_URL}/schedules")
+              timeslot_response = self.class.http_get("#{DOCTOR_URL}/timeslots")
+              room_response = self.class.http_get("#{DOCTOR_URL}/rooms")
               if patient_response.status == 200 && doctor_response.status == 200
                 patient_data = JSON.parse(patient_response.body.to_s)
                 doctor_data = JSON.parse(doctor_response.body.to_s)
@@ -224,8 +232,8 @@ module AppointmentService
       appointment = DB[:appointments].where(id: params['id']).first
       if appointment
         begin
-          patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
-          doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
+          patient_response = self.class.http_get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
+          doctor_response = self.class.http_get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
           if patient_response.status == 200 && doctor_response.status == 200
             patient_data = JSON.parse(patient_response.body.to_s)
             doctor_data = JSON.parse(doctor_response.body.to_s)
@@ -264,7 +272,7 @@ module AppointmentService
         { error: "No appointments found for doctor ID #{doctor_id}" }.to_json
       else
         # Ambil data dokter dari service dokter
-        doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{doctor_id}")
+        doctor_response = self.class.http_get("#{DOCTOR_URL}/doctors/#{doctor_id}")
         if doctor_response.status == 200
           doctor_data = JSON.parse(doctor_response.body.to_s)
         else
@@ -276,7 +284,7 @@ module AppointmentService
         # Proses janji temu
         appointments_data = appointments_for_doctor.map do |appointment|
           # Ambil data pasien dari service pasien
-          patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
+          patient_response = self.class.http_get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
           if patient_response.status == 200
             patient_data = JSON.parse(patient_response.body.to_s)
             {
@@ -312,8 +320,8 @@ module AppointmentService
         { error: "No appointments found for patient ID #{patient_id}" }.to_json
       else
         appointments_data = appointments_for_patient.map do |appointment|
-          doctor_response = HTTPX.get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
-          patient_response = HTTPX.get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
+          doctor_response = self.class.http_get("#{DOCTOR_URL}/doctors/#{appointment[:doctor_id]}")
+          patient_response = self.class.http_get("#{PATIENT_URL}/patients/#{appointment[:patient_id]}")
           if doctor_response.status == 200 && patient_response.status == 200
             doctor_data = JSON.parse(doctor_response.body.to_s)
             patient_data = JSON.parse(patient_response.body.to_s)

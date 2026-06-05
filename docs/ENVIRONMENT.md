@@ -17,7 +17,7 @@ Project memakai environment variable sebagai sumber konfigurasi utama, agar mode
 | `MEDICAL_RECORD_URL`          | `http://localhost:7863`    | Base URL Medical Record Service                          |
 | `OTEL_ENABLED`                | `false`                    | Aktifkan instrumentasi OpenTelemetry                     |
 | `OTEL_SERVICE_NAME`           | nama service               | Nama service pada trace                                  |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318`    | Endpoint OTLP collector                                  |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318`    | Endpoint base OTLP collector untuk exporter Ruby       |
 
 ### Contoh `.env.example` (non-Docker)
 

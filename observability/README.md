@@ -75,10 +75,15 @@ gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-instrumentation-all"
 ```
 
-Lalu di awal `config.ru` atau `app/api.rb`, tambahkan:
+Lalu di awal `config.ru`, tambahkan:
 
 ```ruby
-require_relative "../../observability/ruby/otel" if ENV.fetch("OTEL_ENABLED", "false") == "true"
+if ENV.fetch("OTEL_ENABLED", "false") == "true"
+  otel_config = File.expand_path("../../observability/ruby/otel", __dir__)
+  otel_config = "/observability/ruby/otel" unless File.exist?("#{otel_config}.rb")
+  require otel_config
+  use(*OpenTelemetry::Instrumentation::Rack::Instrumentation.instance.middleware_args)
+end
 ```
 
 Untuk service di dalam folder `services/<nama-service>`, path relatif di atas akan mengarah ke konfigurasi bersama di folder `observability`.
