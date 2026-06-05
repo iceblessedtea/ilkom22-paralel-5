@@ -13,5 +13,5 @@ RUN bundle install
 # Ekspose port yang digunakan oleh aplikasi
 EXPOSE 7862
 
-# Run the service
-CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "--port", "7862"]
+# Run migrations before starting the service
+CMD ["sh", "run.sh"]

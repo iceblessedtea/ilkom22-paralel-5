@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+require "sequel"
+require "sequel/extensions/migration"
+
+database_url = ENV.fetch("DATABASE_URL", "sqlite://db/new_appointments.db")
+database = Sequel.connect(database_url)
+migrations_path = File.expand_path("migrations", __dir__)
+
+Sequel::Migrator.run(database, migrations_path)
+puts "Appointment database migrations are up to date."

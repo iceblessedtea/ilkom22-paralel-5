@@ -5,8 +5,11 @@ ENV["DOCTOR_URL"] = "http://localhost:7861"
 
 require "fileutils"
 require "rack/test"
+require "sequel"
+require "sequel/extensions/migration"
 
 FileUtils.mkdir_p(File.expand_path("tmp", __dir__))
+FileUtils.rm_f(File.expand_path("tmp/test-patients.db", __dir__))
 require_relative "../app/api"
 
 RSpec.configure do |config|
@@ -14,16 +17,7 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     db = PatientService::API::DB
-    db.drop_table?(:patients)
-    db.create_table :patients do
-      primary_key :id
-      String :name
-      Integer :age
-      String :gender
-      String :address
-      Time :created_at
-      Time :updated_at
-    end
+    Sequel::Migrator.run(db, File.expand_path("../db/migrations", __dir__))
   end
 
   config.before do
