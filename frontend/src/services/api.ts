@@ -50,6 +50,12 @@ export interface ResourceConfig<T> {
   normalize: (payload: JsonValue) => T[]
 }
 
+export type CreatePayload =
+  | Array<Pick<Patient, 'name' | 'age' | 'gender' | 'address'>>
+  | Pick<Doctor, 'name' | 'specialization'>
+  | Pick<Appointment, 'patient_id' | 'doctor_id' | 'date' | 'notes'>
+  | Array<Pick<MedicalRecord, 'patient_id' | 'diagnosis'>>
+
 function asArray<T>(payload: JsonValue): T[] {
   return Array.isArray(payload) ? payload as T[] : []
 }
@@ -106,4 +112,43 @@ export async function apiGet<T extends Patient | Doctor | Appointment | MedicalR
   }
 
   return endpoint.normalize(payload) as T[]
+}
+
+export async function apiCreate(resource: ResourceKey, payload: CreatePayload): Promise<unknown> {
+  const endpoint = ENDPOINTS[resource]
+  const response = await fetch(`${CONFIG.apiBaseUrl}${endpoint.path}`, {
+    body: JSON.stringify(payload),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+  })
+
+  const responsePayload = await response.json().catch(() => null)
+
+  if (!response.ok) {
+    const errorMessage = responsePayload && typeof responsePayload === 'object' && 'error' in responsePayload
+      ? String((responsePayload as { error: unknown }).error)
+      : `HTTP ${response.status}`
+    throw new Error(`${endpoint.label}: ${errorMessage}`)
+  }
+
+  return responsePayload
+}
+
+export async function apiDelete(resource: ResourceKey, id: number | string): Promise<void> {
+  const endpoint = ENDPOINTS[resource]
+  const response = await fetch(`${CONFIG.apiBaseUrl}${endpoint.path}/${id}`, {
+    headers: { Accept: 'application/json' },
+    method: 'DELETE',
+  })
+
+  if (!response.ok && response.status !== 204) {
+    const payload = await response.json().catch(() => null)
+    const errorMessage = payload && typeof payload === 'object' && 'error' in payload
+      ? String((payload as { error: unknown }).error)
+      : `HTTP ${response.status}`
+    throw new Error(`${endpoint.label}: ${errorMessage}`)
+  }
 }

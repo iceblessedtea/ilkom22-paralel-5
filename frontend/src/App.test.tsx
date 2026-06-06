@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
@@ -11,6 +11,7 @@ function jsonResponse(payload: unknown, init?: ResponseInit): Response {
 }
 
 afterEach(() => {
+  cleanup()
   vi.unstubAllGlobals()
 })
 
@@ -19,6 +20,7 @@ describe('App', () => {
     vi.stubGlobal('fetch', vi.fn(() => new Promise(() => undefined)))
 
     render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Admin RS' }))
 
     expect(screen.getByLabelText('Memuat data')).toBeInTheDocument()
   })
@@ -38,6 +40,7 @@ describe('App', () => {
     })))
 
     render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Admin RS' }))
 
     expect(await screen.findByText('Andi Wijaya')).toBeInTheDocument()
     expect(screen.getByText('Kendari')).toBeInTheDocument()
@@ -56,6 +59,7 @@ describe('App', () => {
     )))
 
     render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Admin RS' }))
 
     await waitFor(() => {
       expect(screen.getByText('Data belum bisa dimuat')).toBeInTheDocument()
