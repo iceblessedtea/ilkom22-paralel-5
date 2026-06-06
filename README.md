@@ -306,26 +306,40 @@ docker compose down -v
 
 ## Screenshot Evidence
 
-Bukti screenshot runtime aplikasi console tersimpan di folder [docs/screenshots/](docs/screenshots). Jika ingin memperbarui bukti dokumentasi, ambil screenshot baru dengan nama file yang sama.
+Bukti screenshot runtime aplikasi tersimpan di folder [docs/screenshots/](docs/screenshots). Screenshot berikut diambil dari frontend lokal `http://localhost:5173` setelah redesign menjadi web rumah sakit publik dengan halaman informasi dan panel operasional.
 
-### 1. Tab Pasien (Default View)
-![Dashboard Pasien](docs/screenshots/dashboard_patients.png)
+### 1. Home Rumah Sakit
+Halaman utama berisi hero konsultasi, CTA buat janji, pencarian dokter/layanan, statistik, dan informasi layanan unggulan.
 
-### 2. Tab Dokter
-![Dashboard Dokter](docs/screenshots/dashboard_doctors.png)
+![Home Rumah Sakit](docs/screenshots/hospital_home.png)
 
-### 3. Tab Janji Temu
-![Dashboard Janji Temu](docs/screenshots/dashboard_appointments.png)
+### 2. Cari Dokter
+Halaman daftar dokter dan spesialis yang membantu pasien menemukan tenaga medis yang tersedia.
 
-### 4. Tab Rekam Medis
-![Dashboard Rekam Medis](docs/screenshots/dashboard_medical_records.png)
+![Cari Dokter](docs/screenshots/hospital_doctors.png)
+
+### 3. Layanan Kesehatan
+Halaman informasi layanan rumah sakit, termasuk layanan unggulan dan alur pasien.
+
+![Layanan Kesehatan](docs/screenshots/hospital_services.png)
+
+### 4. Info & Media
+Halaman berita, edukasi, dan informasi publik untuk pasien atau pengunjung.
+
+![Info dan Media](docs/screenshots/hospital_news.png)
+
+### 5. Admin RS
+Panel operasional untuk mengelola data pasien, dokter, janji temu, dan rekam medis melalui backend microservices.
+
+![Admin RS](docs/screenshots/hospital_admin.png)
 
 ### Recommended Screenshots for Documentation
 
 Untuk pengembangan dokumen di masa depan, disarankan menyertakan screenshot berikut:
 1. **Jaeger Distributed Tracing**: Alur trace request untuk appointment/medical record melintasi beberapa service di Jaeger UI (`http://localhost:16686`).
-2. **Database Schema / Admin Panel**: Visualisasi skema relasional antar database PostgreSQL atau CLI output status migrasi Sequel.
+2. **PostgreSQL / Database Tooling**: Visualisasi skema relasional antar database PostgreSQL atau CLI output status migrasi Sequel.
 3. **Continuous Integration (GitHub Actions)**: Hasil build, linting, dan test suite yang berhasil lolos di GitHub Actions.
+4. **Deployment Runtime**: Tampilan aplikasi ketika berjalan dari image/container production, bukan hanya mode development Vite.
 
 ### Memperbarui Screenshot Bukti Secara Otomatis
 
@@ -345,7 +359,7 @@ Untuk memperbarui screenshot runtime secara otomatis dengan headless Chrome:
    cd frontend
    node take_screenshots.js
    ```
-   Script ini akan secara otomatis menavigasi setiap tab aplikasi console, menunggu rendering data, dan menimpa file di `docs/screenshots/` dengan screenshot terbaru.
+   Script ini akan secara otomatis menavigasi halaman home, dokter, layanan, info/media, dan Admin RS, lalu menyimpan screenshot terbaru ke `docs/screenshots/`.
 
 ## Roadmap
 

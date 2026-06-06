@@ -3,6 +3,22 @@ import { join } from 'path';
 
 const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const screenshotDir = 'C:\\Users\\TUF GAMING\\Documents\\GitHub\\ilkom22-paralel-5\\docs\\screenshots';
+const appUrl = 'http://localhost:5173';
+
+async function clickNav(page, label) {
+  const buttons = await page.$$('.nav-link');
+
+  for (const button of buttons) {
+    const text = await page.evaluate((element) => element.textContent.trim(), button);
+    if (text === label) {
+      await button.click();
+      await new Promise((resolve) => setTimeout(resolve, 900));
+      return;
+    }
+  }
+
+  throw new Error(`Navigation button not found: ${label}`);
+}
 
 async function run() {
   console.log('Launching Chrome...');
@@ -13,51 +29,29 @@ async function run() {
   });
 
   const page = await browser.newPage();
-  await page.setViewport({ width: 1280, height: 800 });
+  await page.setViewport({ width: 1440, height: 950 });
 
-  console.log('Navigating to http://localhost:5173...');
-  await page.goto('http://localhost:5173', { waitUntil: 'networkidle2' });
+  console.log(`Navigating to ${appUrl}...`);
+  await page.goto(appUrl, { waitUntil: 'networkidle2' });
 
-  // Wait extra 3 seconds for database results to render
-  console.log('Waiting for data to load...');
-  await new Promise(r => setTimeout(r, 3000));
+  console.log('Waiting for the hospital UI to settle...');
+  await new Promise((resolve) => setTimeout(resolve, 1200));
 
-  // Screenshot 1: Patients (default active tab)
-  console.log('Capturing Patients view...');
-  await page.screenshot({ path: join(screenshotDir, 'dashboard_patients.png') });
+  console.log('Capturing home page...');
+  await page.screenshot({ path: join(screenshotDir, 'hospital_home.png'), fullPage: true });
 
-  // Navigation Items
-  const tabs = [
-    { label: 'Dokter', filename: 'dashboard_doctors.png' },
-    { label: 'Janji Temu', filename: 'dashboard_appointments.png' },
-    { label: 'Rekam Medis', filename: 'dashboard_medical_records.png' }
+  const pages = [
+    { label: 'Cari Dokter', filename: 'hospital_doctors.png' },
+    { label: 'Layanan Kesehatan', filename: 'hospital_services.png' },
+    { label: 'Info & Media', filename: 'hospital_news.png' },
+    { label: 'Admin RS', filename: 'hospital_admin.png', waitMs: 2500 }
   ];
 
-  for (const tab of tabs) {
-    console.log(`Clicking on tab: ${tab.label}`);
-    
-    // Find button by text in navigation
-    const buttons = await page.$$('.nav-stack button');
-    let clicked = false;
-    for (const btn of buttons) {
-      const text = await page.evaluate(el => el.textContent.trim(), btn);
-      if (text.includes(tab.label)) {
-        await btn.click();
-        clicked = true;
-        break;
-      }
-    }
-
-    if (!clicked) {
-      console.error(`Failed to find button for tab: ${tab.label}`);
-      continue;
-    }
-
-    // Wait for data load
-    await new Promise(r => setTimeout(r, 2000));
-
-    console.log(`Capturing ${tab.label} view...`);
-    await page.screenshot({ path: join(screenshotDir, tab.filename) });
+  for (const appPage of pages) {
+    console.log(`Capturing ${appPage.label} page...`);
+    await clickNav(page, appPage.label);
+    await new Promise((resolve) => setTimeout(resolve, appPage.waitMs ?? 1200));
+    await page.screenshot({ path: join(screenshotDir, appPage.filename), fullPage: true });
   }
 
   console.log('Done capturing screenshots!');
